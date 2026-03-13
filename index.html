@@ -679,6 +679,8 @@ footer {
 <div id="toast"></div>
 
 <script>
+const RAILWAY_URL = 'https://capy-ai-production.up.railway.app';
+
 function switchTab(t) {
   ['generate','remove'].forEach(x => {
     document.getElementById('panel-'+x).classList.toggle('active', x===t);
@@ -741,8 +743,6 @@ async function generate() {
   }, 700);
 
   // ⬇️ PASTE YOUR RAILWAY URL HERE (keep the quotes)
-  const RAILWAY_URL = 'https://capy-ai-production.up.railway.app';
-
   if (!fi.files.length) {
     err.textContent = 'Please upload a video file first.';
     err.classList.add('show');
