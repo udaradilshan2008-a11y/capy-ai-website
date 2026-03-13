@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Capy AI — Caption Intelligence</title>
+<title>Capy AI  -  Caption Intelligence</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -291,7 +291,7 @@ nav {
   font-size: 12px; font-family: 'DM Mono', monospace; color: var(--gray-300);
   display: flex; align-items: center; gap: 8px; transition: color 0.3s;
 }
-.step::before { content: '—'; }
+.step::before { content: ' - '; }
 .step.active { color: var(--black); }
 .step.done { color: var(--gray-400); }
 .step.done::before { content: 'done'; font-size: 10px; }
@@ -361,7 +361,7 @@ nav {
 .plan-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
 .plan-features li { font-size: 13px; display: flex; align-items: center; gap: 10px; color: var(--gray-600); }
 .plan-card.featured .plan-features li { color: rgba(255,255,255,0.55); }
-.plan-features li::before { content: '—'; color: var(--gray-300); font-size: 11px; flex-shrink: 0; }
+.plan-features li::before { content: ' - '; color: var(--gray-300); font-size: 11px; flex-shrink: 0; }
 .plan-card.featured .plan-features li::before { color: rgba(255,255,255,0.18); }
 .plan-btn {
   width: 100%; padding: 12px; border-radius: 100px;
@@ -405,6 +405,18 @@ footer {
   footer { flex-direction: column; gap: 18px; padding: 28px 24px; text-align: center; }
   .divider { margin: 0 24px; }
 }
+/* Caption Editor */
+.editor-toolbar { background:#f5f5f5; border-radius:12px; padding:16px; margin-bottom:16px; display:flex; flex-wrap:wrap; gap:16px; }
+.toolbar-section { display:flex; flex-direction:column; gap:8px; }
+.color-swatches { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.swatch { width:28px; height:28px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:.2s; }
+.swatch.active { border-color:#000; transform:scale(1.2); }
+.cap-edit-list { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+.cap-edit-row { display:grid; grid-template-columns:56px 1fr; gap:10px; align-items:center; background:#f9f9f9; border-radius:10px; padding:10px 12px; border:1px solid #eee; }
+.cap-edit-row:hover { border-color:#000; }
+.cap-edit-time { font-size:12px; color:#888; font-family:monospace; font-weight:600; }
+.cap-edit-input { border:none; background:transparent; font-size:14px; color:#111; width:100%; outline:none; font-family:inherit; }
+.cap-edit-input:focus { color:#000; }
 </style>
 </head>
 <body>
@@ -428,7 +440,7 @@ footer {
   <div>
     <div class="hero-eyebrow">Caption Intelligence</div>
     <h1 class="hero-title">Remove or<br>generate <em>captions</em><br>in seconds.</h1>
-    <p class="hero-desc">Upload any video or image. Capy AI removes unwanted subtitles or generates perfectly synced captions — clean and fast.</p>
+    <p class="hero-desc">Upload any video or image. Capy AI removes unwanted subtitles or generates perfectly synced captions  -  clean and fast.</p>
     <div class="hero-btns">
       <button class="btn-primary" onclick="document.getElementById('app-section').scrollIntoView({behavior:'smooth'})">Try for Free</button>
       <a class="btn-outline" href="#plans-section">View Plans</a>
@@ -555,6 +567,50 @@ footer {
           </div>
         </div>
         <div class="cap-list" id="gen-caps"></div>
+        
+        <!-- CAPTION EDITOR -->
+        <div id="cap-editor" style="display:none">
+          <div class="editor-toolbar">
+            <div class="toolbar-section">
+              <span class="opt-label">Text Color</span>
+              <div class="color-swatches">
+                <div class="swatch active" style="background:#ffffff" data-color="#ffffff" onclick="setColor(this)"></div>
+                <div class="swatch" style="background:#FFE600" data-color="#FFE600" onclick="setColor(this)"></div>
+                <div class="swatch" style="background:#00FF87" data-color="#00FF87" onclick="setColor(this)"></div>
+                <div class="swatch" style="background:#FF6B6B" data-color="#FF6B6B" onclick="setColor(this)"></div>
+                <div class="swatch" style="background:#60B8FF" data-color="#60B8FF" onclick="setColor(this)"></div>
+                <input type="color" id="custom-color" value="#ffffff" onchange="setCustomColor(this.value)" title="Custom color" style="width:28px;height:28px;border-radius:50%;border:2px solid #333;cursor:pointer;padding:0;">
+              </div>
+            </div>
+            <div class="toolbar-section">
+              <span class="opt-label">Position</span>
+              <div class="chips">
+                <button class="chip" onclick="setPos(this,'top')">Top</button>
+                <button class="chip" onclick="setPos(this,'middle')">Middle</button>
+                <button class="chip on" onclick="setPos(this,'bottom')">Bottom</button>
+              </div>
+            </div>
+            <div class="toolbar-section">
+              <span class="opt-label">Font Size</span>
+              <div class="chips">
+                <button class="chip" onclick="setSize(this,'small')">S</button>
+                <button class="chip on" onclick="setSize(this,'medium')">M</button>
+                <button class="chip" onclick="setSize(this,'large')">L</button>
+                <button class="chip" onclick="setSize(this,'xlarge')">XL</button>
+              </div>
+            </div>
+            <div class="toolbar-section">
+              <span class="opt-label">Style</span>
+              <div class="chips">
+                <button class="chip on" onclick="setBg(this,'box')">Box</button>
+                <button class="chip" onclick="setBg(this,'outline')">Outline</button>
+                <button class="chip" onclick="setBg(this,'none')">Clean</button>
+              </div>
+            </div>
+          </div>
+          <div class="cap-edit-list" id="cap-edit-list"></div>
+        </div>
+
         <div class="dl-row" id="gen-dl" style="display:none">
           <button class="dl-btn" onclick="dlSRT()">Download SRT</button>
           <button class="dl-btn alt" id="burn-btn" onclick="burnVideo()">Download Video</button>
@@ -645,7 +701,7 @@ footer {
         <li>No watermark</li>
         <li>All caption styles</li>
       </ul>
-      <button class="plan-btn" onclick="toast('Basic plan — coming soon')">Get Basic</button>
+      <button class="plan-btn" onclick="toast('Basic plan  -  coming soon')">Get Basic</button>
     </div>
     <div class="plan-card featured">
       <div class="popular-pill">POPULAR</div>
@@ -660,7 +716,7 @@ footer {
         <li>Custom caption fonts</li>
         <li>API access</li>
       </ul>
-      <button class="plan-btn" onclick="toast('Pro plan — coming soon')">Get Pro</button>
+      <button class="plan-btn" onclick="toast('Pro plan  -  coming soon')">Get Pro</button>
     </div>
   </div>
 </section>
@@ -698,7 +754,7 @@ function handleGen(input) {
   if (!input.files.length) return;
   const f = input.files[0];
   const d = document.getElementById('gen-fname');
-  d.textContent = f.name + ' — ' + (f.size/1024/1024).toFixed(1) + ' MB';
+  d.textContent = f.name + '  -  ' + (f.size/1024/1024).toFixed(1) + ' MB';
   d.style.display = 'block';
   document.getElementById('gen-zone').classList.add('has-file');
   document.getElementById('gen-zone').querySelector('.upload-title').textContent = f.name;
@@ -709,7 +765,7 @@ function handleRem(input) {
   if (!input.files.length) return;
   const f = input.files[0];
   const d = document.getElementById('rem-fname');
-  d.textContent = f.name + ' — ' + (f.size/1024/1024).toFixed(1) + ' MB';
+  d.textContent = f.name + '  -  ' + (f.size/1024/1024).toFixed(1) + ' MB';
   d.style.display = 'block';
   document.getElementById('rem-zone').classList.add('has-file');
   document.getElementById('rem-zone').querySelector('.upload-title').textContent = f.name;
@@ -742,7 +798,6 @@ async function generate() {
     else clearInterval(iv);
   }, 700);
 
-  // ⬇️ PASTE YOUR RAILWAY URL HERE (keep the quotes)
   if (!fi.files.length) {
     err.textContent = 'Please upload a video file first.';
     err.classList.add('show');
@@ -784,6 +839,7 @@ async function generate() {
       d.innerHTML = `<span class="cap-time">${cap.time}</span><span class="cap-text">${cap.text}</span>`;
       c.appendChild(d);
     });
+    renderCaptionEditor();
     document.getElementById('gen-dl').style.display = 'flex';
   } catch(e) {
     clearInterval(iv);
@@ -793,6 +849,48 @@ async function generate() {
     err.classList.add('show');
   }
   document.getElementById('gen-btn').disabled = false;
+}
+
+let capColor = '#ffffff';
+let capPos = 'bottom';
+let capSize = 'medium';
+let capBg = 'box';
+
+function setColor(el) {
+  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  capColor = el.dataset.color;
+}
+function setCustomColor(val) {
+  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+  capColor = val;
+}
+function setPos(el, val) {
+  el.closest('.chips').querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  capPos = val;
+}
+function setSize(el, val) {
+  el.closest('.chips').querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  capSize = val;
+}
+function setBg(el, val) {
+  el.closest('.chips').querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  capBg = val;
+}
+
+function renderCaptionEditor() {
+  const list = document.getElementById('cap-edit-list');
+  list.innerHTML = '';
+  caps.forEach((cap, i) => {
+    const row = document.createElement('div');
+    row.className = 'cap-edit-row';
+    row.innerHTML = `<span class="cap-edit-time">${cap.time}</span><input class="cap-edit-input" value="${cap.text}" onchange="caps[${i}].text=this.value" oninput="caps[${i}].text=this.value">`;
+    list.appendChild(row);
+  });
+  document.getElementById('cap-editor').style.display = 'block';
 }
 
 function dlSRT() {
@@ -833,6 +931,10 @@ async function burnVideo() {
     const formData = new FormData();
     formData.append('video', fi.files[0]);
     formData.append('captions', JSON.stringify(caps));
+    formData.append('color', capColor);
+    formData.append('position', capPos);
+    formData.append('size', capSize);
+    formData.append('bg', capBg);
     const res = await fetch(`${RAILWAY_URL}/burn-captions`, {
       method: 'POST',
       body: formData,
@@ -844,7 +946,7 @@ async function burnVideo() {
     a.href = URL.createObjectURL(blob);
     a.download = 'capy-ai-captioned.mp4';
     a.click();
-    toast('Video downloaded! 🦫');
+    toast('Video downloaded! ');
   } catch(err) {
     toast('Error: ' + err.message);
   } finally {
