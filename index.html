@@ -557,7 +557,7 @@ footer {
         <div class="cap-list" id="gen-caps"></div>
         <div class="dl-row" id="gen-dl" style="display:none">
           <button class="dl-btn" onclick="dlSRT()">Download SRT</button>
-          <button class="dl-btn alt" onclick="toast('Video download ready')">Download Video</button>
+          <button class="dl-btn alt" id="burn-btn" onclick="burnVideo()">Download Video</button>
           <button class="dl-btn alt" onclick="resetGen()">New Upload</button>
         </div>
       </div>
@@ -821,6 +821,36 @@ function resetGen() {
   document.getElementById('gen-fname').style.display = 'none';
   document.getElementById('gen-btn').disabled = true;
   document.getElementById('gen-file').value = '';
+}
+
+async function burnVideo() {
+  const fi = document.getElementById('gen-file');
+  if (!fi.files.length || !caps.length) { toast('Please generate captions first!'); return; }
+  const btn = document.getElementById('burn-btn');
+  btn.textContent = 'Processing...';
+  btn.disabled = true;
+  try {
+    const formData = new FormData();
+    formData.append('video', fi.files[0]);
+    formData.append('captions', JSON.stringify(caps));
+    const res = await fetch(`${RAILWAY_URL}/burn-captions`, {
+      method: 'POST',
+      body: formData,
+      mode: 'cors'
+    });
+    if (!res.ok) throw new Error('Failed to burn captions');
+    const blob = await res.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'capy-ai-captioned.mp4';
+    a.click();
+    toast('Video downloaded! 🦫');
+  } catch(err) {
+    toast('Error: ' + err.message);
+  } finally {
+    btn.textContent = 'Download Video';
+    btn.disabled = false;
+  }
 }
 
 function toast(msg) {
