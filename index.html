@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capy AI — Caption Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #0a0a0a;
+  --white: #ffffff;
+  --off-white: #f7f7f5;
+  --gray-100: #f0f0ee;
+  --gray-200: #e0e0dc;
+  --gray-300: #c4c4be;
+  --gray-400: #9a9a92;
+  --gray-500: #6a6a62;
+  --gray-600: #4a4a44;
+  --gray-700: #2e2e2a;
+  --radius: 12px;
+  --radius-sm: 7px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--white);
+  color: var(--black);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 56px;
+  background: rgba(255,255,255,0.94);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--gray-200);
+}
+.nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--black); }
+.nav-logo-mark {
+  width: 32px; height: 32px; background: var(--black); border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-logo-mark svg { width: 16px; height: 16px; fill: none; stroke: white; stroke-width: 2.2; stroke-linecap: round; }
+.nav-logo-text { font-family: 'DM Serif Display', serif; font-size: 20px; }
+.nav-links { display: flex; align-items: center; gap: 36px; }
+.nav-links a { color: var(--gray-500); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+.nav-links a:hover { color: var(--black); }
+.nav-cta {
+  background: var(--black); color: var(--white);
+  padding: 9px 22px; border-radius: 100px;
+  font-size: 13px; font-weight: 600; text-decoration: none;
+  transition: all 0.2s; border: none; cursor: pointer;
+}
+.nav-cta:hover { background: var(--gray-700); }
+
+/* HERO */
+.hero {
+  padding: 152px 56px 96px;
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+}
+.hero-eyebrow {
+  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.14em;
+  color: var(--gray-400); text-transform: uppercase; margin-bottom: 22px;
+  display: flex; align-items: center; gap: 10px;
+}
+.hero-eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--gray-300); display: inline-block; }
+.hero-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(40px, 5vw, 62px);
+  line-height: 1.06; letter-spacing: -2px; margin-bottom: 22px;
+}
+.hero-title em { font-style: italic; color: var(--gray-400); }
+.hero-desc { font-size: 16px; color: var(--gray-500); line-height: 1.75; margin-bottom: 36px; max-width: 400px; }
+.hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn-primary {
+  background: var(--black); color: var(--white);
+  padding: 14px 28px; border-radius: 100px;
+  font-size: 14px; font-weight: 600; text-decoration: none; border: none; cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-primary:hover { background: var(--gray-700); }
+.btn-outline {
+  background: transparent; color: var(--black);
+  padding: 14px 28px; border-radius: 100px;
+  font-size: 14px; font-weight: 500; border: 1px solid var(--gray-300);
+  cursor: pointer; text-decoration: none; transition: border-color 0.2s;
+}
+.btn-outline:hover { border-color: var(--black); }
+
+.hero-visual {
+  background: var(--off-white); border: 1px solid var(--gray-200);
+  border-radius: 18px; overflow: hidden;
+}
+.hero-vis-top {
+  padding: 14px 18px; border-bottom: 1px solid var(--gray-200);
+  display: flex; align-items: center; gap: 7px;
+}
+.vis-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--gray-200); }
+.vis-label { margin-left: 8px; font-size: 11px; font-family: 'DM Mono', monospace; color: var(--gray-400); }
+.vis-content { padding: 20px; }
+.vis-video-box {
+  background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: 10px;
+  aspect-ratio: 16/9; display: flex; align-items: flex-end; justify-content: center;
+  padding-bottom: 18px; position: relative; overflow: hidden; margin-bottom: 14px;
+}
+.vis-play {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-60%);
+  width: 36px; height: 36px; border: 1.5px solid var(--gray-300); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.vis-play::after {
+  content: ''; border-left: 10px solid var(--gray-400);
+  border-top: 6px solid transparent; border-bottom: 6px solid transparent; margin-left: 3px;
+}
+.vis-sub {
+  background: rgba(10,10,10,0.78); color: #fff; padding: 7px 18px; border-radius: 5px;
+  font-size: 12px; font-weight: 500;
+  animation: pulse 3s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+.vis-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.vis-stat {
+  background: var(--white); border: 1px solid var(--gray-200);
+  border-radius: 8px; padding: 12px; text-align: center;
+}
+.vis-num { font-family: 'DM Serif Display', serif; font-size: 19px; }
+.vis-lbl { font-size: 10px; color: var(--gray-400); font-family: 'DM Mono', monospace; margin-top: 2px; }
+
+/* DIVIDER */
+.divider { height: 1px; background: var(--gray-200); margin: 0 56px; }
+
+/* SECTION */
+.section { max-width: 1200px; margin: 0 auto; padding: 80px 56px; }
+.section-tag {
+  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.14em;
+  color: var(--gray-400); text-transform: uppercase; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-tag::before { content: ''; width: 16px; height: 1px; background: var(--gray-300); display: block; }
+.section-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(30px, 4vw, 46px);
+  line-height: 1.1; letter-spacing: -1px; margin-bottom: 14px;
+}
+.section-sub { font-size: 15px; color: var(--gray-500); line-height: 1.7; max-width: 480px; }
+
+/* TOOLS */
+.tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 44px; }
+.tool-card {
+  background: var(--off-white); border: 1px solid var(--gray-200);
+  border-radius: 16px; padding: 32px; cursor: pointer;
+  transition: all 0.22s; text-decoration: none; color: var(--black); display: block;
+}
+.tool-card:hover { border-color: var(--gray-400); transform: translateY(-3px); box-shadow: 0 16px 48px rgba(0,0,0,0.07); }
+.tool-card.featured { background: var(--black); color: var(--white); border-color: var(--black); }
+.tool-card.featured:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(0,0,0,0.2); }
+.tool-icon {
+  width: 44px; height: 44px; border-radius: 10px; margin-bottom: 20px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--gray-200);
+}
+.tool-card.featured .tool-icon { background: rgba(255,255,255,0.1); }
+.tool-icon svg { width: 20px; height: 20px; stroke: var(--gray-600); stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.tool-card.featured .tool-icon svg { stroke: white; }
+.tool-name { font-family: 'DM Serif Display', serif; font-size: 24px; margin-bottom: 8px; }
+.tool-desc { font-size: 14px; opacity: 0.55; line-height: 1.65; margin-bottom: 20px; }
+.tool-meta { font-size: 11px; font-family: 'DM Mono', monospace; opacity: 0.35; }
+.tool-arrow { float: right; font-size: 18px; margin-top: -22px; opacity: 0.3; }
+
+/* APP */
+#app-section { padding: 80px 56px; max-width: 1200px; margin: 0 auto; }
+.app-tabs {
+  display: flex; gap: 3px; background: var(--gray-100);
+  padding: 4px; border-radius: 10px; margin-bottom: 32px; width: fit-content;
+  border: 1px solid var(--gray-200);
+}
+.app-tab {
+  padding: 9px 22px; border-radius: 7px; border: none;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+  cursor: pointer; background: transparent; color: var(--gray-500); transition: all 0.2s;
+}
+.app-tab.active { background: var(--black); color: var(--white); }
+.app-tab:not(.active):hover { color: var(--black); }
+.app-panel { display: none; }
+.app-panel.active { display: block; }
+.app-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+/* Upload */
+.upload-area {
+  background: var(--off-white); border: 1.5px dashed var(--gray-300);
+  border-radius: var(--radius); padding: 44px 28px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  cursor: pointer; transition: all 0.2s; text-align: center; position: relative; overflow: hidden;
+}
+.upload-area:hover { border-color: var(--gray-500); background: var(--gray-100); }
+.upload-area.has-file { border-style: solid; border-color: var(--black); }
+.upload-area input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.upload-icon {
+  width: 48px; height: 48px; background: var(--gray-200); border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; margin-bottom: 4px;
+}
+.upload-icon svg { width: 22px; height: 22px; stroke: var(--gray-500); stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.upload-title { font-size: 15px; font-weight: 600; color: var(--black); }
+.upload-hint { font-size: 12px; color: var(--gray-400); font-family: 'DM Mono', monospace; }
+.file-display {
+  background: var(--gray-100); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm); padding: 10px 14px;
+  font-size: 12px; font-family: 'DM Mono', monospace; color: var(--gray-600);
+  margin-top: 8px; display: none;
+}
+
+/* Options */
+.options-panel { display: flex; flex-direction: column; gap: 20px; }
+.opt-label {
+  display: block; font-size: 11px; font-family: 'DM Mono', monospace;
+  letter-spacing: 0.1em; color: var(--gray-400); text-transform: uppercase; margin-bottom: 10px;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.chip {
+  padding: 7px 15px; border-radius: 100px;
+  border: 1px solid var(--gray-200); background: var(--white);
+  color: var(--gray-600); font-family: 'DM Sans', sans-serif;
+  font-size: 13px; cursor: pointer; transition: all 0.18s;
+}
+.chip:hover { border-color: var(--gray-400); color: var(--black); }
+.chip.on { background: var(--black); color: var(--white); border-color: var(--black); }
+
+.lang-sel {
+  width: 100%; padding: 11px 14px;
+  background: var(--white); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm); color: var(--black);
+  font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; cursor: pointer;
+}
+.lang-sel:focus { border-color: var(--gray-400); }
+
+.run-btn {
+  width: 100%; padding: 14px; border: none; border-radius: 100px;
+  background: var(--black); color: var(--white);
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: background 0.2s;
+}
+.run-btn:hover:not(:disabled) { background: var(--gray-700); }
+.run-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.usage-txt {
+  font-size: 11px; color: var(--gray-400); font-family: 'DM Mono', monospace; text-align: center;
+}
+.usage-txt a { color: var(--gray-600); }
+
+/* Result */
+.result-box {
+  background: var(--off-white); border: 1px solid var(--gray-200);
+  border-radius: var(--radius); padding: 24px; min-height: 280px;
+  grid-column: 1 / -1; display: none;
+}
+.result-box.show { display: block; }
+.result-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--gray-200);
+}
+.result-head-title { font-family: 'DM Serif Display', serif; font-size: 20px; }
+.status-live {
+  font-size: 11px; font-family: 'DM Mono', monospace; color: var(--gray-500);
+  display: none; align-items: center; gap: 6px;
+}
+.status-live::before {
+  content: ''; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--gray-400); display: inline-block; animation: blink 1.2s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
+.status-done { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--gray-500); display: none; }
+
+.loading-wrap {
+  display: none; flex-direction: column; align-items: center;
+  justify-content: center; gap: 14px; padding: 52px;
+}
+.spin {
+  width: 34px; height: 34px; border: 2px solid var(--gray-200);
+  border-top-color: var(--black); border-radius: 50%; animation: rotate 0.75s linear infinite;
+}
+@keyframes rotate { to { transform: rotate(360deg); } }
+.loading-label { font-size: 13px; font-family: 'DM Mono', monospace; color: var(--gray-500); }
+.step-list { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.step {
+  font-size: 12px; font-family: 'DM Mono', monospace; color: var(--gray-300);
+  display: flex; align-items: center; gap: 8px; transition: color 0.3s;
+}
+.step::before { content: '—'; }
+.step.active { color: var(--black); }
+.step.done { color: var(--gray-400); }
+.step.done::before { content: 'done'; font-size: 10px; }
+
+.cap-list { display: flex; flex-direction: column; gap: 5px; }
+.cap-row {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 10px 14px; border-radius: var(--radius-sm);
+  background: var(--white); border: 1px solid var(--gray-200);
+  animation: fadeUp 0.28s ease forwards; opacity: 0; transform: translateY(6px);
+}
+@keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+.cap-time { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--gray-400); white-space: nowrap; margin-top: 2px; min-width: 44px; }
+.cap-text { font-size: 14px; line-height: 1.5; color: var(--black); }
+
+.dl-row { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+.dl-btn {
+  padding: 10px 20px; border-radius: 100px;
+  background: var(--black); color: var(--white);
+  border: none; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: background 0.2s;
+}
+.dl-btn:hover { background: var(--gray-700); }
+.dl-btn.alt { background: transparent; color: var(--black); border: 1px solid var(--gray-300); }
+.dl-btn.alt:hover { border-color: var(--black); }
+
+.err-box {
+  background: #fff5f5; border: 1px solid #fecdcd;
+  border-radius: var(--radius-sm); padding: 14px 18px;
+  font-size: 13px; color: #c0392b; font-family: 'DM Mono', monospace; display: none; margin-top: 12px;
+}
+.err-box.show { display: block; }
+
+/* Remove info */
+.remove-info {
+  background: var(--off-white); border: 1px solid var(--gray-200);
+  border-radius: var(--radius); padding: 36px; text-align: center; grid-column: 1/-1;
+}
+.remove-info h3 { font-family: 'DM Serif Display', serif; font-size: 22px; margin-bottom: 10px; }
+.remove-info p { font-size: 14px; color: var(--gray-500); line-height: 1.7; max-width: 480px; margin: 0 auto 22px; }
+.tech-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.tech-item {
+  padding: 6px 14px; border-radius: 100px;
+  background: var(--white); border: 1px solid var(--gray-200);
+  font-size: 11px; font-family: 'DM Mono', monospace; color: var(--gray-600);
+}
+
+/* PLANS */
+.plans-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 44px; }
+.plan-card {
+  background: var(--off-white); border: 1px solid var(--gray-200);
+  border-radius: 16px; padding: 28px; position: relative; overflow: hidden;
+}
+.plan-card.featured { background: var(--black); color: var(--white); border-color: var(--black); }
+.popular-pill {
+  position: absolute; top: 18px; right: 18px;
+  background: var(--white); color: var(--black);
+  font-size: 10px; padding: 3px 10px; border-radius: 100px;
+  font-family: 'DM Mono', monospace; letter-spacing: 0.05em;
+}
+.plan-tier { font-size: 11px; font-family: 'DM Mono', monospace; letter-spacing: 0.12em; color: var(--gray-400); margin-bottom: 10px; }
+.plan-card.featured .plan-tier { color: rgba(255,255,255,0.38); }
+.plan-price { font-family: 'DM Serif Display', serif; font-size: 40px; letter-spacing: -1.5px; margin-bottom: 2px; }
+.plan-price span { font-family: 'DM Sans', sans-serif; font-size: 18px; font-weight: 400; }
+.plan-period { font-size: 12px; color: var(--gray-400); margin-bottom: 24px; }
+.plan-card.featured .plan-period { color: rgba(255,255,255,0.32); }
+.plan-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.plan-features li { font-size: 13px; display: flex; align-items: center; gap: 10px; color: var(--gray-600); }
+.plan-card.featured .plan-features li { color: rgba(255,255,255,0.55); }
+.plan-features li::before { content: '—'; color: var(--gray-300); font-size: 11px; flex-shrink: 0; }
+.plan-card.featured .plan-features li::before { color: rgba(255,255,255,0.18); }
+.plan-btn {
+  width: 100%; padding: 12px; border-radius: 100px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  background: transparent; color: var(--black); border: 1px solid var(--gray-300);
+}
+.plan-btn:hover { border-color: var(--black); }
+.plan-card.featured .plan-btn { background: var(--white); color: var(--black); border-color: transparent; }
+.plan-card.featured .plan-btn:hover { background: var(--gray-100); }
+
+/* FOOTER */
+footer {
+  border-top: 1px solid var(--gray-200); padding: 36px 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  max-width: 1200px; margin: 0 auto;
+}
+.footer-brand { font-family: 'DM Serif Display', serif; font-size: 17px; }
+.footer-links { display: flex; gap: 24px; }
+.footer-links a { font-size: 13px; color: var(--gray-400); text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: var(--black); }
+.footer-copy { font-size: 11px; color: var(--gray-400); font-family: 'DM Mono', monospace; }
+
+/* Toast */
+#toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(12px);
+  background: var(--black); color: var(--white);
+  padding: 11px 22px; border-radius: 100px;
+  font-size: 13px; font-weight: 500; opacity: 0;
+  transition: all 0.3s; pointer-events: none; z-index: 9998; white-space: nowrap;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 880px) {
+  nav { padding: 16px 24px; }
+  .nav-links { display: none; }
+  .hero { grid-template-columns: 1fr; padding: 120px 24px 60px; gap: 40px; }
+  .hero-visual { display: none; }
+  .section, #app-section { padding: 60px 24px; }
+  .tools-grid, .app-layout, .plans-grid { grid-template-columns: 1fr; }
+  footer { flex-direction: column; gap: 18px; padding: 28px 24px; text-align: center; }
+  .divider { margin: 0 24px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h7"/></svg>
+    </div>
+    <span class="nav-logo-text">Capy AI</span>
+  </a>
+  <div class="nav-links">
+    <a href="#app-section">Try It</a>
+    <a href="#plans-section">Pricing</a>
+    <a href="#">Docs</a>
+  </div>
+  <a class="nav-cta" href="#app-section">Start Free</a>
+</nav>
+
+<section class="hero">
+  <div>
+    <div class="hero-eyebrow">Caption Intelligence</div>
+    <h1 class="hero-title">Remove or<br>generate <em>captions</em><br>in seconds.</h1>
+    <p class="hero-desc">Upload any video or image. Capy AI removes unwanted subtitles or generates perfectly synced captions — clean and fast.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="document.getElementById('app-section').scrollIntoView({behavior:'smooth'})">Try for Free</button>
+      <a class="btn-outline" href="#plans-section">View Plans</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-vis-top">
+      <div class="vis-dot"></div><div class="vis-dot"></div><div class="vis-dot"></div>
+      <span class="vis-label">capy-ai · preview</span>
+    </div>
+    <div class="vis-content">
+      <div class="vis-video-box">
+        <div class="vis-play"></div>
+        <div class="vis-sub">Hello and welcome to this video</div>
+      </div>
+      <div class="vis-stats">
+        <div class="vis-stat"><div class="vis-num">98%</div><div class="vis-lbl">accuracy</div></div>
+        <div class="vis-stat"><div class="vis-num">2.1s</div><div class="vis-lbl">avg time</div></div>
+        <div class="vis-stat"><div class="vis-num">40+</div><div class="vis-lbl">languages</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section">
+  <div class="section-tag">What you can do</div>
+  <h2 class="section-title">Two tools.<br>One clean result.</h2>
+  <div class="tools-grid">
+    <a class="tool-card featured" href="#app-section" onclick="switchTab('generate')">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      </div>
+      <div class="tool-name">Generate Captions</div>
+      <div class="tool-desc">Upload any video and our AI transcribes speech, syncs timestamps, and outputs styled captions ready to export as SRT.</div>
+      <div class="tool-meta">Powered by Claude AI</div>
+      <div class="tool-arrow">→</div>
+    </a>
+    <a class="tool-card" href="#app-section" onclick="switchTab('remove')">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+      </div>
+      <div class="tool-name">Remove Captions</div>
+      <div class="tool-desc">Detects and removes hardcoded subtitles from videos and images using AI inpainting to reconstruct the background.</div>
+      <div class="tool-meta">AI Inpainting · Video + Image</div>
+      <div class="tool-arrow">→</div>
+    </a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="app-section">
+  <div class="section-tag">Live Tool</div>
+  <h2 class="section-title" style="margin-bottom:28px">Try Capy AI now.</h2>
+
+  <div class="app-tabs">
+    <button class="app-tab active" id="tab-generate" onclick="switchTab('generate')">Generate Captions</button>
+    <button class="app-tab" id="tab-remove" onclick="switchTab('remove')">Remove Captions</button>
+  </div>
+
+  <!-- GENERATE -->
+  <div class="app-panel active" id="panel-generate">
+    <div class="app-layout">
+      <div>
+        <div class="upload-area" id="gen-zone" onclick="document.getElementById('gen-file').click()">
+          <div class="upload-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          </div>
+          <div class="upload-title">Upload your video</div>
+          <div class="upload-hint">MP4 · MOV · AVI · WebM</div>
+          <input type="file" id="gen-file" accept="video/*,audio/*" style="display:none" onchange="handleGen(this)">
+        </div>
+        <div class="file-display" id="gen-fname"></div>
+        <div class="err-box" id="gen-err"></div>
+      </div>
+      <div class="options-panel">
+        <div>
+          <span class="opt-label">Caption Style</span>
+          <div class="chips">
+            <button class="chip on" onclick="pick(this,'s')">White Text</button>
+            <button class="chip" onclick="pick(this,'s')">Black Text</button>
+            <button class="chip" onclick="pick(this,'s')">Subtitle Bar</button>
+            <button class="chip" onclick="pick(this,'s')">Minimal</button>
+          </div>
+        </div>
+        <div>
+          <span class="opt-label">Language</span>
+          <select class="lang-sel" id="gen-lang">
+            <option value="English">English (Auto-detect)</option>
+            <option value="Spanish">Spanish</option>
+            <option value="French">French</option>
+            <option value="Portuguese">Portuguese</option>
+            <option value="Mandarin">Mandarin</option>
+            <option value="Arabic">Arabic</option>
+          </select>
+        </div>
+        <div>
+          <span class="opt-label">Output Format</span>
+          <div class="chips">
+            <button class="chip on" onclick="pick(this,'f')">Burned In</button>
+            <button class="chip" onclick="pick(this,'f')">SRT File</button>
+            <button class="chip" onclick="pick(this,'f')">Both</button>
+          </div>
+        </div>
+        <button class="run-btn" id="gen-btn" onclick="generate()" disabled>Generate Captions</button>
+        <div class="usage-txt">3 free operations remaining · <a href="#plans-section">Upgrade</a></div>
+      </div>
+      <div class="result-box" id="gen-result">
+        <div class="result-head">
+          <div class="result-head-title">Generated Captions</div>
+          <div class="status-live" id="gen-live">Processing</div>
+          <div class="status-done" id="gen-done">Complete</div>
+        </div>
+        <div class="loading-wrap" id="gen-load">
+          <div class="spin"></div>
+          <div class="loading-label">Analyzing your content</div>
+          <div class="step-list" id="gen-steps">
+            <div class="step">Extracting audio</div>
+            <div class="step">Transcribing speech</div>
+            <div class="step">Syncing timestamps</div>
+            <div class="step">Formatting captions</div>
+          </div>
+        </div>
+        <div class="cap-list" id="gen-caps"></div>
+        <div class="dl-row" id="gen-dl" style="display:none">
+          <button class="dl-btn" onclick="dlSRT()">Download SRT</button>
+          <button class="dl-btn alt" onclick="toast('Video download ready')">Download Video</button>
+          <button class="dl-btn alt" onclick="resetGen()">New Upload</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REMOVE -->
+  <div class="app-panel" id="panel-remove">
+    <div class="app-layout">
+      <div>
+        <div class="upload-area" id="rem-zone" onclick="document.getElementById('rem-file').click()">
+          <div class="upload-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          </div>
+          <div class="upload-title">Upload video or image</div>
+          <div class="upload-hint">MP4 · MOV · JPG · PNG · up to 500MB</div>
+          <input type="file" id="rem-file" accept="video/*,image/*" style="display:none" onchange="handleRem(this)">
+        </div>
+        <div class="file-display" id="rem-fname"></div>
+      </div>
+      <div class="options-panel">
+        <div>
+          <span class="opt-label">Detection Mode</span>
+          <div class="chips">
+            <button class="chip on" onclick="pick(this,'d')">Auto Detect</button>
+            <button class="chip" onclick="pick(this,'d')">Manual Select</button>
+          </div>
+        </div>
+        <div>
+          <span class="opt-label">Inpainting Quality</span>
+          <div class="chips">
+            <button class="chip on" onclick="pick(this,'q')">Fast</button>
+            <button class="chip" onclick="pick(this,'q')">Balanced</button>
+            <button class="chip" onclick="pick(this,'q')">High Quality</button>
+          </div>
+        </div>
+        <button class="run-btn" id="rem-btn" onclick="toast('Backend deployment coming soon')" disabled>Remove Captions</button>
+        <div class="usage-txt">3 free operations remaining · <a href="#plans-section">Upgrade</a></div>
+      </div>
+      <div class="remove-info">
+        <h3>Caption Removal requires a backend</h3>
+        <p>Full caption removal uses AI inpainting to detect and erase hardcoded subtitles, then reconstructs the background. This requires a GPU server with the following stack:</p>
+        <div class="tech-list">
+          <span class="tech-item">LaMa Inpainting</span>
+          <span class="tech-item">FFmpeg</span>
+          <span class="tech-item">PaddleOCR</span>
+          <span class="tech-item">GPU Cloud</span>
+          <span class="tech-item">Python API</span>
+        </div>
+        <div style="margin-top:24px">
+          <button class="run-btn" style="max-width:220px;margin:0 auto" onclick="toast('Early access request sent')">Request Early Access</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section" id="plans-section">
+  <div class="section-tag">Pricing</div>
+  <h2 class="section-title">Simple, honest pricing.</h2>
+  <p class="section-sub">Start free. Upgrade when you need more power.</p>
+  <div class="plans-grid">
+    <div class="plan-card">
+      <div class="plan-tier">FREE</div>
+      <div class="plan-price">$0</div>
+      <div class="plan-period">forever</div>
+      <ul class="plan-features">
+        <li>10 operations / month</li>
+        <li>Up to 5 min videos</li>
+        <li>Standard speed</li>
+        <li>Watermarked output</li>
+      </ul>
+      <button class="plan-btn" onclick="toast('You are on the Free plan')">Current Plan</button>
+    </div>
+    <div class="plan-card">
+      <div class="plan-tier">BASIC</div>
+      <div class="plan-price">$9<span>/mo</span></div>
+      <div class="plan-period">billed monthly</div>
+      <ul class="plan-features">
+        <li>100 operations / month</li>
+        <li>Up to 30 min videos</li>
+        <li>Fast processing</li>
+        <li>No watermark</li>
+        <li>All caption styles</li>
+      </ul>
+      <button class="plan-btn" onclick="toast('Basic plan — coming soon')">Get Basic</button>
+    </div>
+    <div class="plan-card featured">
+      <div class="popular-pill">POPULAR</div>
+      <div class="plan-tier">PRO</div>
+      <div class="plan-price">$24<span>/mo</span></div>
+      <div class="plan-period">or $19/mo billed annually</div>
+      <ul class="plan-features">
+        <li>Unlimited operations</li>
+        <li>Unlimited video length</li>
+        <li>Priority processing</li>
+        <li>No watermark</li>
+        <li>Custom caption fonts</li>
+        <li>API access</li>
+      </ul>
+      <button class="plan-btn" onclick="toast('Pro plan — coming soon')">Get Pro</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-brand">Capy AI</div>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">API</a>
+    <a href="#">Contact</a>
+  </div>
+  <div class="footer-copy">2025 Capy AI. All rights reserved.</div>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+function switchTab(t) {
+  ['generate','remove'].forEach(x => {
+    document.getElementById('panel-'+x).classList.toggle('active', x===t);
+    document.getElementById('tab-'+x).classList.toggle('active', x===t);
+  });
+  document.getElementById('app-section').scrollIntoView({behavior:'smooth'});
+}
+
+function pick(el, g) {
+  el.closest('.chips').querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function handleGen(input) {
+  if (!input.files.length) return;
+  const f = input.files[0];
+  const d = document.getElementById('gen-fname');
+  d.textContent = f.name + ' — ' + (f.size/1024/1024).toFixed(1) + ' MB';
+  d.style.display = 'block';
+  document.getElementById('gen-zone').classList.add('has-file');
+  document.getElementById('gen-zone').querySelector('.upload-title').textContent = f.name;
+  document.getElementById('gen-btn').disabled = false;
+}
+
+function handleRem(input) {
+  if (!input.files.length) return;
+  const f = input.files[0];
+  const d = document.getElementById('rem-fname');
+  d.textContent = f.name + ' — ' + (f.size/1024/1024).toFixed(1) + ' MB';
+  d.style.display = 'block';
+  document.getElementById('rem-zone').classList.add('has-file');
+  document.getElementById('rem-zone').querySelector('.upload-title').textContent = f.name;
+  document.getElementById('rem-btn').disabled = false;
+}
+
+let caps = [];
+
+async function generate() {
+  const lang = document.getElementById('gen-lang').value;
+  const fi = document.getElementById('gen-file');
+  const err = document.getElementById('gen-err');
+  err.classList.remove('show');
+
+  const box = document.getElementById('gen-result');
+  box.classList.add('show');
+  document.getElementById('gen-caps').innerHTML = '';
+  document.getElementById('gen-dl').style.display = 'none';
+  document.getElementById('gen-done').style.display = 'none';
+  document.getElementById('gen-live').style.display = 'flex';
+  document.getElementById('gen-load').style.display = 'flex';
+  document.getElementById('gen-btn').disabled = true;
+
+  const steps = document.querySelectorAll('#gen-steps .step');
+  steps.forEach(s => s.classList.remove('active','done'));
+  let si = 0;
+  const iv = setInterval(() => {
+    if (si > 0) steps[si-1].classList.replace('active','done');
+    if (si < steps.length) { steps[si].classList.add('active'); si++; }
+    else clearInterval(iv);
+  }, 700);
+
+  // ⬇️ PASTE YOUR RAILWAY URL HERE (keep the quotes)
+  const RAILWAY_URL = 'https://capy-ai-production.up.railway.app';
+
+  if (!fi.files.length) {
+    err.textContent = 'Please upload a video file first.';
+    err.classList.add('show');
+    document.getElementById('gen-btn').disabled = false;
+    document.getElementById('gen-load').style.display = 'none';
+    document.getElementById('gen-live').style.display = 'none';
+    return;
+  }
+
+  try {
+    // Pack the video file into a form and send to Railway backend
+    const formData = new FormData();
+    formData.append('video', fi.files[0]);
+    formData.append('language', lang);
+
+    const res = await fetch(`${RAILWAY_URL}/generate-captions`, {
+      method: 'POST',
+      body: formData,
+      mode: 'cors'
+    });
+
+    clearInterval(iv);
+    steps.forEach(s => { s.classList.remove('active'); s.classList.add('done'); });
+
+    const rawText = await res.text();
+    let data;
+    try { data = JSON.parse(rawText); }
+    catch(e) { throw new Error('Server error: ' + rawText.slice(0,120)); }
+    if (!data.success) throw new Error(data.error || 'Server error');
+    caps = data.captions;
+    document.getElementById('gen-load').style.display = 'none';
+    document.getElementById('gen-live').style.display = 'none';
+    document.getElementById('gen-done').style.display = 'block';
+    const c = document.getElementById('gen-caps');
+    caps.forEach((cap, i) => {
+      const d = document.createElement('div');
+      d.className = 'cap-row';
+      d.style.animationDelay = (i*0.055)+'s';
+      d.innerHTML = `<span class="cap-time">${cap.time}</span><span class="cap-text">${cap.text}</span>`;
+      c.appendChild(d);
+    });
+    document.getElementById('gen-dl').style.display = 'flex';
+  } catch(e) {
+    clearInterval(iv);
+    document.getElementById('gen-load').style.display = 'none';
+    document.getElementById('gen-live').style.display = 'none';
+    err.textContent = 'Error: ' + (e.message || 'Could not connect. Please try again.');
+    err.classList.add('show');
+  }
+  document.getElementById('gen-btn').disabled = false;
+}
+
+function dlSRT() {
+  if (!caps.length) return;
+  let srt = '';
+  caps.forEach((c, i) => {
+    const [m, s] = c.time.split(':').map(Number);
+    const st = `00:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')},000`;
+    const es = s + 4;
+    const en = `00:${String(m).padStart(2,'0')}:${String(es%60).padStart(2,'0')},000`;
+    srt += `${i+1}\n${st} --> ${en}\n${c.text}\n\n`;
+  });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([srt], {type:'text/plain'}));
+  a.download = 'capy_captions.srt';
+  a.click();
+  toast('SRT file downloaded');
+}
+
+function resetGen() {
+  caps = [];
+  document.getElementById('gen-result').classList.remove('show');
+  document.getElementById('gen-caps').innerHTML = '';
+  document.getElementById('gen-zone').classList.remove('has-file');
+  document.getElementById('gen-zone').querySelector('.upload-title').textContent = 'Upload your video';
+  document.getElementById('gen-fname').style.display = 'none';
+  document.getElementById('gen-btn').disabled = true;
+  document.getElementById('gen-file').value = '';
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
