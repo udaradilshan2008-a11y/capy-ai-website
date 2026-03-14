@@ -406,28 +406,29 @@ footer {
   .divider { margin: 0 24px; }
 }
 /* Video Preview Editor */
-.preview-editor { display:flex; gap:24px; flex-wrap:wrap; margin-top:16px; }
-.preview-wrap { flex:1; min-width:280px; }
-.preview-label { font-size:11px; letter-spacing:.08em; color:#888; text-transform:uppercase; margin-bottom:8px; }
-.video-container { position:relative; background:#000; border-radius:12px; overflow:hidden; aspect-ratio:9/16; max-height:480px; }
-.video-container video { width:100%; height:100%; object-fit:contain; display:block; }
-.caption-overlay { position:absolute; inset:0; pointer-events:none; }
-.draggable-caption { position:absolute; left:50%; bottom:15%; transform:translateX(-50%); cursor:grab; pointer-events:all; user-select:none; touch-action:none; max-width:90%; text-align:center; padding:6px 14px; border-radius:6px; transition:background .2s; }
+.preview-editor { display:flex; gap:20px; flex-wrap:wrap; margin-top:16px; }
+.preview-wrap { flex:0 0 auto; width:240px; }
+@media(max-width:600px){ .preview-wrap { width:100%; } }
+.preview-label { font-size:10px; letter-spacing:.08em; color:#888; text-transform:uppercase; margin-bottom:8px; }
+.video-container { position:relative; background:#111; border-radius:12px; overflow:hidden; width:100%; aspect-ratio:9/16; }
+.video-container video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.caption-overlay { position:absolute; inset:0; overflow:hidden; }
+.draggable-caption { position:absolute; left:50%; bottom:15%; transform:translateX(-50%); cursor:grab; user-select:none; touch-action:none; text-align:center; max-width:92%; }
 .draggable-caption:active { cursor:grabbing; }
-.draggable-caption span { font-family:'DM Sans',sans-serif; font-weight:700; line-height:1.3; white-space:pre-wrap; word-break:break-word; }
-.vid-controls { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent,rgba(0,0,0,0.7)); padding:12px 12px 10px; display:flex; align-items:center; gap:10px; }
-.vid-btn { background:none; border:none; color:#fff; font-size:18px; cursor:pointer; padding:0 4px; flex-shrink:0; }
+#drag-cap-text { font-family:'DM Sans',sans-serif; font-weight:800; font-size:18px; color:#fff; text-transform:uppercase; line-height:1.25; text-shadow:2px 2px 8px rgba(0,0,0,0.9),-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000; white-space:pre-wrap; word-break:break-word; }
+.vid-controls { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent,rgba(0,0,0,0.8)); padding:24px 10px 8px; display:flex; align-items:center; gap:8px; }
+.vid-btn { background:none; border:none; color:#fff; font-size:16px; cursor:pointer; padding:0 2px; flex-shrink:0; line-height:1; }
 .vid-seek { flex:1; height:3px; accent-color:#fff; cursor:pointer; }
-.vid-time { color:#fff; font-size:12px; flex-shrink:0; font-family:monospace; }
-.editor-controls { flex:1; min-width:220px; display:flex; flex-direction:column; gap:16px; }
+.vid-time { color:#fff; font-size:11px; flex-shrink:0; font-family:monospace; }
+.editor-controls { flex:1; min-width:200px; display:flex; flex-direction:column; gap:14px; }
 .ctrl-section { display:flex; flex-direction:column; gap:8px; }
 .color-swatches { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-.swatch { width:28px; height:28px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:.2s; flex-shrink:0; }
-.swatch.active { border-color:#000; transform:scale(1.2); }
-.cap-edit-list { display:flex; flex-direction:column; gap:8px; max-height:200px; overflow-y:auto; }
-.cap-edit-row { display:grid; grid-template-columns:52px 1fr; gap:8px; align-items:center; background:#f9f9f9; border-radius:10px; padding:8px 12px; border:1px solid #eee; cursor:pointer; }
-.cap-edit-row:hover, .cap-edit-row.active { border-color:#000; background:#f0f0f0; }
-.cap-edit-time { font-size:11px; color:#888; font-family:monospace; font-weight:600; }
+.swatch { width:26px; height:26px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:.15s; flex-shrink:0; }
+.swatch.active { border-color:#000; transform:scale(1.25); }
+.cap-edit-list { display:flex; flex-direction:column; gap:6px; max-height:180px; overflow-y:auto; }
+.cap-edit-row { display:grid; grid-template-columns:48px 1fr; gap:8px; align-items:center; background:#f9f9f9; border-radius:8px; padding:8px 10px; border:1.5px solid #eee; cursor:pointer; transition:.15s; }
+.cap-edit-row:hover,.cap-edit-row.active { border-color:#000; background:#f0f0f0; }
+.cap-edit-time { font-size:10px; color:#888; font-family:monospace; font-weight:700; }
 .cap-edit-input { border:none; background:transparent; font-size:13px; color:#111; width:100%; outline:none; font-family:inherit; }
 </style>
 </head>
@@ -583,25 +584,22 @@ footer {
         <!-- VIDEO PREVIEW EDITOR -->
         <div id="cap-editor" style="display:none">
           <div class="preview-editor">
-            <!-- Video Preview -->
             <div class="preview-wrap">
               <div class="preview-label">PREVIEW — drag caption to reposition</div>
               <div class="video-container" id="vid-container">
-                <video id="preview-vid" playsinline></video>
+                <video id="preview-vid" playsinline webkit-playsinline></video>
                 <div class="caption-overlay" id="cap-overlay">
                   <div class="draggable-caption" id="drag-cap">
-                    <span id="drag-cap-text">Your caption appears here</span>
+                    <div id="drag-cap-text"></div>
                   </div>
                 </div>
                 <div class="vid-controls">
-                  <button class="vid-btn" onclick="togglePlay()">&#9654;</button>
-                  <input type="range" class="vid-seek" id="vid-seek" value="0" min="0" step="0.1" oninput="seekVideo(this.value)">
+                  <button class="vid-btn" id="play-btn" onclick="togglePlay()">&#9654;</button>
+                  <input type="range" class="vid-seek" id="vid-seek" value="0" min="0" step="0.01" oninput="seekVideo(this.value)">
                   <span class="vid-time" id="vid-time">0:00</span>
                 </div>
               </div>
             </div>
-
-            <!-- Controls Panel -->
             <div class="editor-controls">
               <div class="ctrl-section">
                 <span class="opt-label">Text Color</span>
@@ -611,7 +609,17 @@ footer {
                   <div class="swatch" style="background:#00FF87" data-color="#00FF87" onclick="setColor(this)"></div>
                   <div class="swatch" style="background:#FF6B6B" data-color="#FF6B6B" onclick="setColor(this)"></div>
                   <div class="swatch" style="background:#60B8FF" data-color="#60B8FF" onclick="setColor(this)"></div>
-                  <input type="color" id="custom-color" value="#ffffff" onchange="setCustomColor(this.value)" title="Custom" style="width:28px;height:28px;border-radius:50%;border:2px solid #333;cursor:pointer;padding:0;">
+                  <input type="color" id="custom-color" value="#ffffff" onchange="setCustomColor(this.value)" title="Custom" style="width:28px;height:28px;border-radius:50%;border:2px solid #333;cursor:pointer;padding:0;background:none;">
+                </div>
+              </div>
+              <div class="ctrl-section">
+                <span class="opt-label">Highlight Color</span>
+                <div class="color-swatches">
+                  <div class="swatch hl active" style="background:#FFE600" data-color="#FFE600" onclick="setHL(this)"></div>
+                  <div class="swatch hl" style="background:#00FF87" data-color="#00FF87" onclick="setHL(this)"></div>
+                  <div class="swatch hl" style="background:#FF6B6B" data-color="#FF6B6B" onclick="setHL(this)"></div>
+                  <div class="swatch hl" style="background:#60B8FF" data-color="#60B8FF" onclick="setHL(this)"></div>
+                  <div class="swatch hl" style="background:#ffffff" data-color="#ffffff" onclick="setHL(this)"></div>
                 </div>
               </div>
               <div class="ctrl-section">
@@ -626,9 +634,9 @@ footer {
               <div class="ctrl-section">
                 <span class="opt-label">Style</span>
                 <div class="chips">
-                  <button class="chip on" onclick="setBg(this,'box')">Box</button>
+                  <button class="chip on" onclick="setBg(this,'shadow')">Shadow</button>
+                  <button class="chip" onclick="setBg(this,'box')">Box</button>
                   <button class="chip" onclick="setBg(this,'outline')">Outline</button>
-                  <button class="chip" onclick="setBg(this,'none')">Clean</button>
                 </div>
               </div>
               <div class="ctrl-section">
@@ -880,21 +888,28 @@ async function generate() {
 }
 
 let capColor = '#ffffff';
+let capHL = '#FFE600';
 let capSize = 'medium';
-let capBg = 'box';
-let capX = 50; // percent from left
-let capY = 85; // percent from top
-let currentCapIndex = 0;
+let capBg = 'shadow';
+let capX = 50;
+let capY = 82;
+let hlWordIndex = 0;
 
 function setColor(el) {
-  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+  el.closest('.color-swatches').querySelectorAll('.swatch:not(.hl)').forEach(s => s.classList.remove('active'));
   el.classList.add('active');
   capColor = el.dataset.color;
   updateCaptionStyle();
 }
 function setCustomColor(val) {
-  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.swatch:not(.hl)').forEach(s => s.classList.remove('active'));
   capColor = val;
+  updateCaptionStyle();
+}
+function setHL(el) {
+  el.closest('.color-swatches').querySelectorAll('.swatch.hl').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  capHL = el.dataset.color;
   updateCaptionStyle();
 }
 function setSize(el, val) {
@@ -910,111 +925,136 @@ function setBg(el, val) {
   updateCaptionStyle();
 }
 
+function renderCaption(text) {
+  const el = document.getElementById('drag-cap-text');
+  const sizeMap = { small:'14px', medium:'18px', large:'26px', xlarge:'34px' };
+  const fs = sizeMap[capSize] || '18px';
+  const words = text.toUpperCase().split(' ');
+  // highlight the longest word
+  let hlIdx = 0;
+  words.forEach((w,i) => { if(w.length > words[hlIdx].length) hlIdx = i; });
+  el.innerHTML = words.map((w,i) =>
+    `<span style="color:${i===hlIdx ? capHL : capColor}">${w}</span>`
+  ).join(' ');
+  el.style.fontSize = fs;
+  el.style.fontWeight = '800';
+  el.style.textTransform = 'uppercase';
+  updateCaptionStyle();
+}
+
 function updateCaptionStyle() {
   const cap = document.getElementById('drag-cap');
-  const span = document.getElementById('drag-cap-text');
-  const sizeMap = { small: '16px', medium: '22px', large: '30px', xlarge: '40px' };
-  span.style.color = capColor;
-  span.style.fontSize = sizeMap[capSize] || '22px';
-  if (capBg === 'box') {
-    cap.style.background = 'rgba(0,0,0,0.6)';
-    cap.style.webkitTextStroke = '';
-  } else if (capBg === 'outline') {
-    cap.style.background = 'transparent';
-    span.style.webkitTextStroke = '1.5px black';
+  const el = document.getElementById('drag-cap-text');
+  if (!cap || !el) return;
+  const sizeMap = { small:'14px', medium:'18px', large:'26px', xlarge:'34px' };
+  el.style.fontSize = sizeMap[capSize] || '18px';
+
+  if (capBg === 'shadow') {
+    cap.style.background = 'none';
+    cap.style.padding = '0';
+    el.style.textShadow = '2px 2px 8px rgba(0,0,0,1), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000';
+    el.style.webkitTextStroke = '';
+  } else if (capBg === 'box') {
+    cap.style.background = 'rgba(0,0,0,0.65)';
+    cap.style.padding = '6px 14px';
+    cap.style.borderRadius = '6px';
+    el.style.textShadow = 'none';
+    el.style.webkitTextStroke = '';
   } else {
-    cap.style.background = 'transparent';
-    span.style.webkitTextStroke = '';
+    cap.style.background = 'none';
+    cap.style.padding = '0';
+    el.style.textShadow = 'none';
+    el.style.webkitTextStroke = '1.5px #000';
   }
 }
 
 function initDrag() {
   const cap = document.getElementById('drag-cap');
   const container = document.getElementById('vid-container');
-  let dragging = false, startX, startY, origLeft, origTop;
+  let dragging = false, startX, startY, startCapX, startCapY;
 
   function getPos(e) {
     return e.touches ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : { x: e.clientX, y: e.clientY };
   }
 
-  cap.addEventListener('mousedown', startDrag);
-  cap.addEventListener('touchstart', startDrag, { passive: true });
+  cap.addEventListener('mousedown', start);
+  cap.addEventListener('touchstart', start, { passive: true });
 
-  function startDrag(e) {
+  function start(e) {
     dragging = true;
     const pos = getPos(e);
-    startX = pos.x;
-    startY = pos.y;
-    const rect = cap.getBoundingClientRect();
-    origLeft = rect.left + rect.width / 2;
-    origTop = rect.top + rect.height / 2;
-    cap.style.transition = 'none';
+    startX = pos.x; startY = pos.y;
+    startCapX = capX; startCapY = capY;
   }
 
-  document.addEventListener('mousemove', doDrag);
-  document.addEventListener('touchmove', doDrag, { passive: true });
+  document.addEventListener('mousemove', move);
+  document.addEventListener('touchmove', move, { passive: true });
 
-  function doDrag(e) {
+  function move(e) {
     if (!dragging) return;
     const pos = getPos(e);
-    const dx = pos.x - startX;
-    const dy = pos.y - startY;
-    const cRect = container.getBoundingClientRect();
-    const newX = ((origLeft + dx - cRect.left) / cRect.width) * 100;
-    const newY = ((origTop + dy - cRect.top) / cRect.height) * 100;
-    capX = Math.max(5, Math.min(95, newX));
-    capY = Math.max(5, Math.min(95, newY));
+    const rect = container.getBoundingClientRect();
+    const dx = ((pos.x - startX) / rect.width) * 100;
+    const dy = ((pos.y - startY) / rect.height) * 100;
+    capX = Math.max(5, Math.min(95, startCapX + dx));
+    capY = Math.max(5, Math.min(95, startCapY + dy));
     cap.style.left = capX + '%';
     cap.style.top = capY + '%';
     cap.style.bottom = 'auto';
     cap.style.transform = 'translateX(-50%)';
   }
 
-  document.addEventListener('mouseup', () => dragging = false);
-  document.addEventListener('touchend', () => dragging = false);
+  document.addEventListener('mouseup', () => { dragging = false; });
+  document.addEventListener('touchend', () => { dragging = false; });
 }
 
 function initVideoPreview() {
-  const fileInput = document.getElementById('gen-file');
   const vid = document.getElementById('preview-vid');
   const seek = document.getElementById('vid-seek');
   const timeEl = document.getElementById('vid-time');
+  const fi = document.getElementById('gen-file');
 
-  if (fileInput.files[0]) {
-    vid.src = URL.createObjectURL(fileInput.files[0]);
+  if (fi.files && fi.files[0]) {
+    const url = URL.createObjectURL(fi.files[0]);
+    vid.src = url;
     vid.load();
   }
 
+  vid.addEventListener('loadedmetadata', () => {
+    seek.max = vid.duration;
+  });
+
   vid.addEventListener('timeupdate', () => {
-    seek.max = vid.duration || 100;
-    seek.value = vid.currentTime;
+    if (!isNaN(vid.duration)) {
+      seek.max = vid.duration;
+      seek.value = vid.currentTime;
+    }
     const t = Math.floor(vid.currentTime);
     timeEl.textContent = `${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}`;
-    updateCurrentCaption(vid.currentTime);
+    // show current caption
+    let current = caps[0];
+    for (let i = 0; i < caps.length; i++) {
+      const [m, s] = caps[i].time.split(':').map(Number);
+      if (vid.currentTime >= m * 60 + s) current = caps[i];
+      else break;
+    }
+    if (current) renderCaption(current.text);
   });
-}
 
-function updateCurrentCaption(time) {
-  const span = document.getElementById('drag-cap-text');
-  let current = caps[0];
-  for (let i = 0; i < caps.length; i++) {
-    const [m, s] = caps[i].time.split(':').map(Number);
-    const capTime = m * 60 + s;
-    if (time >= capTime) current = caps[i];
-    else break;
-  }
-  if (current) span.textContent = current.text;
+  vid.addEventListener('ended', () => {
+    document.getElementById('play-btn').innerHTML = '&#9654;';
+  });
 }
 
 function togglePlay() {
   const vid = document.getElementById('preview-vid');
-  const btn = document.querySelector('.vid-btn');
+  const btn = document.getElementById('play-btn');
   if (vid.paused) { vid.play(); btn.innerHTML = '&#9646;&#9646;'; }
   else { vid.pause(); btn.innerHTML = '&#9654;'; }
 }
 
 function seekVideo(val) {
-  document.getElementById('preview-vid').currentTime = val;
+  document.getElementById('preview-vid').currentTime = parseFloat(val);
 }
 
 function renderCaptionEditor() {
@@ -1023,11 +1063,11 @@ function renderCaptionEditor() {
   caps.forEach((cap, i) => {
     const row = document.createElement('div');
     row.className = 'cap-edit-row' + (i === 0 ? ' active' : '');
-    row.innerHTML = `<span class="cap-edit-time">${cap.time}</span><input class="cap-edit-input" value="${cap.text}" onchange="caps[${i}].text=this.value" oninput="caps[${i}].text=this.value">`;
+    row.innerHTML = `<span class="cap-edit-time">${cap.time}</span><input class="cap-edit-input" value="${cap.text}" onchange="caps[${i}].text=this.value" oninput="caps[${i}].text=this.value;renderCaption(this.value)">`;
     row.addEventListener('click', () => {
       document.querySelectorAll('.cap-edit-row').forEach(r => r.classList.remove('active'));
       row.classList.add('active');
-      document.getElementById('drag-cap-text').textContent = cap.text;
+      renderCaption(cap.text);
       const vid = document.getElementById('preview-vid');
       const [m, s] = cap.time.split(':').map(Number);
       vid.currentTime = m * 60 + s;
@@ -1035,8 +1075,8 @@ function renderCaptionEditor() {
     list.appendChild(row);
   });
 
-  if (caps[0]) document.getElementById('drag-cap-text').textContent = caps[0].text;
   document.getElementById('cap-editor').style.display = 'block';
+  if (caps[0]) renderCaption(caps[0].text);
   updateCaptionStyle();
   initDrag();
   initVideoPreview();
@@ -1081,6 +1121,7 @@ async function burnVideo() {
     formData.append('video', fi.files[0]);
     formData.append('captions', JSON.stringify(caps));
     formData.append('color', capColor);
+    formData.append('hlColor', capHL);
     formData.append('size', capSize);
     formData.append('bg', capBg);
     formData.append('posX', capX);
