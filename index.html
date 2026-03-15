@@ -1033,6 +1033,7 @@ function renderCaptionEditor() {
   });
 
   document.getElementById('cap-editor').style.display = 'block';
+  document.getElementById('gen-caps').style.display = 'none';
   if (caps[0]) renderPreviewText(caps[0].text);
   updatePreviewCaption();
   initDrag();
@@ -1059,7 +1060,8 @@ function resetGen() {
   caps = [];
   document.getElementById('gen-result').classList.remove('show');
   document.getElementById('gen-caps').innerHTML = '';
-  document.getElementById('gen-zone').classList.remove('has-file');
+  document.getElementById('gen-caps').style.display = 'flex';
+  document.getElementById('cap-editor').style.display = 'none';
   document.getElementById('gen-zone').querySelector('.upload-title').textContent = 'Upload your video';
   document.getElementById('gen-fname').style.display = 'none';
   document.getElementById('gen-btn').disabled = true;
