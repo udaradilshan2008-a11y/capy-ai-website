@@ -260,6 +260,7 @@ nav {
   grid-column: 1 / -1; display: none;
 }
 .result-box.show { display: block; }
+.result-box.editor-mode { background: transparent; border: none; padding: 0; min-height: unset; }
 .result-head {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--gray-200);
@@ -963,7 +964,11 @@ function renderPreviewText(text) {
   ).join(' ');
 }
 
+let dragInitialized = false;
+
 function initDrag() {
+  if (dragInitialized) return;
+  dragInitialized = true;
   const cap = document.getElementById('drag-cap');
   const screen = document.querySelector('.phone-screen');
   if (!cap || !screen) return;
@@ -1034,6 +1039,8 @@ function renderCaptionEditor() {
 
   document.getElementById('cap-editor').style.display = 'block';
   document.getElementById('gen-caps').style.display = 'none';
+  document.getElementById('gen-result').classList.add('editor-mode');
+  document.getElementById('gen-done').textContent = 'Complete';
   if (caps[0]) renderPreviewText(caps[0].text);
   updatePreviewCaption();
   initDrag();
@@ -1059,6 +1066,7 @@ function dlSRT() {
 function resetGen() {
   caps = [];
   document.getElementById('gen-result').classList.remove('show');
+  document.getElementById('gen-result').classList.remove('editor-mode');
   document.getElementById('gen-caps').innerHTML = '';
   document.getElementById('gen-caps').style.display = 'flex';
   document.getElementById('cap-editor').style.display = 'none';
