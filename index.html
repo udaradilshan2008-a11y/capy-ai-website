@@ -406,6 +406,54 @@ footer {
   footer { flex-direction: column; gap: 18px; padding: 28px 24px; text-align: center; }
   .divider { margin: 0 24px; }
 }
+/* Full Screen Editor */
+.fullscreen-editor {
+  position: fixed; inset: 0; z-index: 200;
+  background: #fff; display: none; flex-direction: column;
+  animation: slideUp 0.3s ease;
+}
+.fullscreen-editor.open { display: flex; }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.editor-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; border-bottom: 1px solid #eee; background: #fff;
+  position: sticky; top: 0; z-index: 10;
+}
+.editor-topbar-title { font-size: 16px; font-weight: 700; }
+.editor-close-btn {
+  background: #f0f0ee; border: none; border-radius: 100px;
+  padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.editor-body {
+  flex: 1; overflow-y: auto; padding: 16px 20px;
+  display: flex; flex-direction: column; gap: 20px;
+}
+.editor-preview-center {
+  display: flex; justify-content: center; padding: 8px 0;
+}
+.editor-sections { display: flex; flex-direction: column; gap: 16px; }
+.editor-section {
+  background: #f7f7f5; border-radius: 12px; padding: 14px 16px;
+}
+.editor-section-title {
+  font-size: 11px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: #888; margin-bottom: 10px;
+}
+.editor-bottombar {
+  padding: 14px 20px; border-top: 1px solid #eee; background: #fff;
+  display: flex; gap: 10px;
+}
+.editor-dl-btn {
+  flex: 1; padding: 14px; border-radius: 100px; border: none;
+  background: #0a0a0a; color: #fff; font-size: 15px; font-weight: 700;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+}
+.editor-srt-btn {
+  padding: 14px 20px; border-radius: 100px;
+  background: transparent; border: 1.5px solid #ccc;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
 /* Caption Editor */
 .preview-editor { display:flex; flex-direction:column; gap:16px; margin-top:16px; }
 .preview-wrap { width:100%; display:flex; flex-direction:column; align-items:center; }
@@ -971,6 +1019,7 @@ function renderPreviewText(text) {
 }
 
 let dragInitialized = false;
+let capFontSize = 13; // px on mockup
 
 function initDrag() {
   if (dragInitialized) return;
@@ -980,9 +1029,16 @@ function initDrag() {
   if (!cap || !screen) return;
 
   let dragging = false, startX, startY, startCapX, startCapY;
+  let pinching = false, startDist = 0, startFontSize = 13;
 
   function getPos(e) {
     return e.touches ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : { x: e.clientX, y: e.clientY };
+  }
+
+  function getDist(e) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    return Math.sqrt(dx*dx + dy*dy);
   }
 
   cap.addEventListener('mousedown', (e) => {
@@ -992,11 +1048,20 @@ function initDrag() {
     startCapX = capX; startCapY = capY;
     e.preventDefault();
   });
+
   cap.addEventListener('touchstart', (e) => {
-    dragging = true;
-    const pos = getPos(e);
-    startX = pos.x; startY = pos.y;
-    startCapX = capX; startCapY = capY;
+    if (e.touches.length === 2) {
+      pinching = true;
+      dragging = false;
+      startDist = getDist(e);
+      startFontSize = capFontSize;
+    } else {
+      dragging = true;
+      pinching = false;
+      const pos = getPos(e);
+      startX = pos.x; startY = pos.y;
+      startCapX = capX; startCapY = capY;
+    }
   }, { passive: true });
 
   document.addEventListener('mousemove', (e) => {
@@ -1011,21 +1076,43 @@ function initDrag() {
     cap.style.bottom = 'auto';
     cap.style.transform = 'translateX(-50%)';
   });
+
   document.addEventListener('touchmove', (e) => {
-    if (!dragging) return;
-    const rect = screen.getBoundingClientRect();
-    const dx = ((e.touches[0].clientX - startX) / rect.width) * 100;
-    const dy = ((e.touches[0].clientY - startY) / rect.height) * 100;
-    capX = Math.max(10, Math.min(90, startCapX + dx));
-    capY = Math.max(5, Math.min(95, startCapY + dy));
-    cap.style.left = capX + '%';
-    cap.style.top = capY + '%';
-    cap.style.bottom = 'auto';
-    cap.style.transform = 'translateX(-50%)';
+    if (pinching && e.touches.length === 2) {
+      const dist = getDist(e);
+      const scale = dist / startDist;
+      capFontSize = Math.max(7, Math.min(30, startFontSize * scale));
+      document.getElementById('drag-cap-text').style.fontSize = capFontSize + 'px';
+      // also update burn size based on font size
+      if (capFontSize < 9) capSize = 'small';
+      else if (capFontSize < 14) capSize = 'medium';
+      else if (capFontSize < 20) capSize = 'large';
+      else capSize = 'xlarge';
+    } else if (dragging && e.touches.length === 1) {
+      const rect = screen.getBoundingClientRect();
+      const dx = ((e.touches[0].clientX - startX) / rect.width) * 100;
+      const dy = ((e.touches[0].clientY - startY) / rect.height) * 100;
+      capX = Math.max(10, Math.min(90, startCapX + dx));
+      capY = Math.max(5, Math.min(95, startCapY + dy));
+      cap.style.left = capX + '%';
+      cap.style.top = capY + '%';
+      cap.style.bottom = 'auto';
+      cap.style.transform = 'translateX(-50%)';
+    }
   }, { passive: true });
 
   document.addEventListener('mouseup', () => { dragging = false; });
-  document.addEventListener('touchend', () => { dragging = false; });
+  document.addEventListener('touchend', () => { dragging = false; pinching = false; });
+}
+
+function openEditor() {
+  document.getElementById('fullscreen-editor').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEditor() {
+  document.getElementById('fullscreen-editor').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 function renderCaptionEditor() {
@@ -1043,16 +1130,10 @@ function renderCaptionEditor() {
     list.appendChild(row);
   });
 
-  document.getElementById('cap-editor').style.display = 'block';
-  document.getElementById('gen-caps').style.display = 'none';
-  document.getElementById('gen-result').style.display = 'none';
-  document.getElementById('gen-result').classList.add('editor-mode');
-  document.getElementById('gen-dl').style.display = 'none';
-  document.getElementById('gen-dl-2').style.display = 'flex';
-  document.getElementById('gen-done').textContent = 'Complete';
   if (caps[0]) renderPreviewText(caps[0].text);
   updatePreviewCaption();
   initDrag();
+  openEditor();
 }
 
 function dlSRT() {
@@ -1129,5 +1210,91 @@ function toast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 </script>
+<!-- FULL SCREEN EDITOR -->
+<div class="fullscreen-editor" id="fullscreen-editor">
+  <div class="editor-topbar">
+    <span class="editor-topbar-title">Caption Editor</span>
+    <button class="editor-close-btn" onclick="closeEditor()">← Back</button>
+  </div>
+  <div class="editor-body">
+
+    <!-- Phone preview centered -->
+    <div class="editor-preview-center">
+      <div>
+        <div class="preview-label" style="text-align:center;margin-bottom:10px">DRAG CAPTION TO REPOSITION</div>
+        <div class="phone-mockup" id="phone-mockup">
+          <div class="phone-screen" id="phone-screen">
+            <div class="phone-bg"></div>
+            <div class="draggable-caption" id="drag-cap">
+              <div id="drag-cap-text"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="editor-sections">
+
+      <!-- Text Color -->
+      <div class="editor-section">
+        <div class="editor-section-title">Text Color</div>
+        <div class="color-swatches">
+          <div class="swatch active" style="background:#ffffff" data-color="#ffffff" onclick="setColor(this)"></div>
+          <div class="swatch" style="background:#FFE600" data-color="#FFE600" onclick="setColor(this)"></div>
+          <div class="swatch" style="background:#00FF87" data-color="#00FF87" onclick="setColor(this)"></div>
+          <div class="swatch" style="background:#FF6B6B" data-color="#FF6B6B" onclick="setColor(this)"></div>
+          <div class="swatch" style="background:#60B8FF" data-color="#60B8FF" onclick="setColor(this)"></div>
+          <input type="color" id="custom-color" value="#ffffff" onchange="setCustomColor(this.value)" title="Custom" style="width:28px;height:28px;border-radius:50%;border:2px solid #ccc;cursor:pointer;padding:0;background:none;">
+        </div>
+      </div>
+
+      <!-- Highlight Color -->
+      <div class="editor-section">
+        <div class="editor-section-title">Highlight Color</div>
+        <div class="color-swatches">
+          <div class="swatch hl active" style="background:#FFE600" data-color="#FFE600" onclick="setHL(this)"></div>
+          <div class="swatch hl" style="background:#00FF87" data-color="#00FF87" onclick="setHL(this)"></div>
+          <div class="swatch hl" style="background:#FF6B6B" data-color="#FF6B6B" onclick="setHL(this)"></div>
+          <div class="swatch hl" style="background:#60B8FF" data-color="#60B8FF" onclick="setHL(this)"></div>
+          <div class="swatch hl" style="background:#ff69b4" data-color="#ff69b4" onclick="setHL(this)"></div>
+        </div>
+      </div>
+
+      <!-- Font Size -->
+      <div class="editor-section">
+        <div class="editor-section-title">Font Size</div>
+        <div class="chips">
+          <button class="chip" onclick="setSize(this,'small')">S</button>
+          <button class="chip on" onclick="setSize(this,'medium')">M</button>
+          <button class="chip" onclick="setSize(this,'large')">L</button>
+          <button class="chip" onclick="setSize(this,'xlarge')">XL</button>
+        </div>
+      </div>
+
+      <!-- Style -->
+      <div class="editor-section">
+        <div class="editor-section-title">Style</div>
+        <div class="chips">
+          <button class="chip on" onclick="setBg(this,'shadow')">Shadow</button>
+          <button class="chip" onclick="setBg(this,'box')">Box</button>
+          <button class="chip" onclick="setBg(this,'outline')">Outline</button>
+        </div>
+      </div>
+
+      <!-- Edit Captions -->
+      <div class="editor-section">
+        <div class="editor-section-title">Edit Captions</div>
+        <div class="cap-edit-list" id="cap-edit-list"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="editor-bottombar">
+    <button class="editor-srt-btn" onclick="dlSRT()">SRT</button>
+    <button class="editor-dl-btn" id="burn-btn" onclick="burnVideo()">Download Video</button>
+  </div>
+</div>
+
 </body>
 </html>
