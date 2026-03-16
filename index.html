@@ -930,6 +930,18 @@ function updatePreviewCaption() {
   }
 }
 
+function setFontSize(val) {
+  capFontSize = val;
+  const el = document.querySelector('#fullscreen-editor #drag-cap-text');
+  if (el) el.style.fontSize = capFontSize + 'px';
+  const slider = document.getElementById('size-slider');
+  if (slider) slider.value = capFontSize;
+  if (capFontSize < 9) capSize = 'small';
+  else if (capFontSize < 15) capSize = 'medium';
+  else if (capFontSize < 22) capSize = 'large';
+  else capSize = 'xlarge';
+}
+
 function renderPreviewText(text) {
   // Use the one inside fullscreen-editor
   const el = document.querySelector('#fullscreen-editor #drag-cap-text') || document.getElementById('drag-cap-text');
@@ -979,12 +991,22 @@ function initDrag() {
       dragging = false;
       startDist = getDist(e);
       startFontSize = capFontSize;
-    } else {
+    } else if (e.touches.length === 1) {
       dragging = true;
       pinching = false;
       const pos = getPos(e);
       startX = pos.x; startY = pos.y;
       startCapX = capX; startCapY = capY;
+    }
+  }, { passive: true });
+
+  // Also listen for second finger anywhere on screen
+  screen.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) {
+      pinching = true;
+      dragging = false;
+      startDist = getDist(e);
+      startFontSize = capFontSize;
     }
   }, { passive: true });
 
@@ -1005,13 +1027,16 @@ function initDrag() {
     if (pinching && e.touches.length === 2) {
       const dist = getDist(e);
       const scale = dist / startDist;
-      capFontSize = Math.max(7, Math.min(30, startFontSize * scale));
-      const capTextEl = document.querySelector('#fullscreen-editor #drag-cap-text') || document.getElementById('drag-cap-text');
+      capFontSize = Math.max(6, Math.min(32, startFontSize * scale));
+      const capTextEl = document.querySelector('#fullscreen-editor #drag-cap-text');
       if (capTextEl) capTextEl.style.fontSize = capFontSize + 'px';
-      // also update burn size based on font size
+      // sync slider
+      const slider = document.getElementById('size-slider');
+      if (slider) slider.value = capFontSize;
+      // update burn size
       if (capFontSize < 9) capSize = 'small';
-      else if (capFontSize < 14) capSize = 'medium';
-      else if (capFontSize < 20) capSize = 'large';
+      else if (capFontSize < 15) capSize = 'medium';
+      else if (capFontSize < 22) capSize = 'large';
       else capSize = 'xlarge';
     } else if (dragging && e.touches.length === 1) {
       const rect = screen.getBoundingClientRect();
@@ -1027,7 +1052,10 @@ function initDrag() {
   }, { passive: true });
 
   document.addEventListener('mouseup', () => { dragging = false; });
-  document.addEventListener('touchend', () => { dragging = false; pinching = false; });
+  document.addEventListener('touchend', (e) => {
+    if (e.touches.length < 2) pinching = false;
+    if (e.touches.length === 0) dragging = false;
+  });
 }
 
 function openEditor() {
@@ -1189,12 +1217,12 @@ function toast(msg) {
 
       <!-- Font Size -->
       <div class="editor-section">
-        <div class="editor-section-title">Font Size</div>
-        <div class="chips">
-          <button class="chip" onclick="setSize(this,'small')">S</button>
-          <button class="chip on" onclick="setSize(this,'medium')">M</button>
-          <button class="chip" onclick="setSize(this,'large')">L</button>
-          <button class="chip" onclick="setSize(this,'xlarge')">XL</button>
+        <div class="editor-section-title">Caption Size</div>
+        <input type="range" id="size-slider" min="6" max="32" value="13" step="0.5" 
+          style="width:100%;accent-color:#000;height:6px;cursor:pointer;"
+          oninput="setFontSize(parseFloat(this.value))">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:#888;margin-top:4px;">
+          <span>Small</span><span>Medium</span><span>Large</span><span>XL</span>
         </div>
       </div>
 
