@@ -1121,7 +1121,7 @@ function renderCaptionEditor() {
   caps.forEach((cap, i) => {
     const row = document.createElement('div');
     row.className = 'cap-edit-row' + (i === 0 ? ' active' : '');
-    row.innerHTML = `<span class="cap-edit-time">${cap.time}</span><input class="cap-edit-input" value="${cap.text}" oninput="caps[${i}].text=this.value;if(${i}===0)renderPreviewText(this.value)">`;
+    row.innerHTML = `<span class="cap-edit-time">${cap.time}</span><input class="cap-edit-input" value="${cap.text}" oninput="caps[${i}].text=this.value;renderPreviewText(this.value)">`;
     row.addEventListener('click', () => {
       document.querySelectorAll('.cap-edit-row').forEach(r => r.classList.remove('active'));
       row.classList.add('active');
@@ -1130,10 +1130,12 @@ function renderCaptionEditor() {
     list.appendChild(row);
   });
 
-  if (caps[0]) renderPreviewText(caps[0].text);
-  updatePreviewCaption();
-  initDrag();
   openEditor();
+  setTimeout(() => {
+    if (caps[0]) renderPreviewText(caps[0].text);
+    updatePreviewCaption();
+    initDrag();
+  }, 100);
 }
 
 function dlSRT() {
