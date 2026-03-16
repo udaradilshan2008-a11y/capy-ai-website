@@ -633,83 +633,6 @@ footer {
       </div>
     </div>
 
-      <!-- CAPTION EDITOR - outside result box -->
-      <div id="cap-editor" style="display:none; padding:0 16px;">
-        <div class="preview-editor">
-
-          <!-- Phone mockup preview -->
-          <div class="preview-wrap">
-            <div class="preview-label">DRAG CAPTION TO REPOSITION</div>
-            <div class="phone-mockup" id="phone-mockup">
-              <div class="phone-screen">
-                <div class="phone-bg"></div>
-                <div class="draggable-caption" id="drag-cap">
-                  <div id="drag-cap-text"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Controls -->
-          <div class="editor-controls">
-
-            <div class="ctrl-section">
-              <span class="opt-label">Text Color</span>
-              <div class="color-swatches">
-                <div class="swatch active" style="background:#ffffff" data-color="#ffffff" onclick="setColor(this)"></div>
-                <div class="swatch" style="background:#FFE600" data-color="#FFE600" onclick="setColor(this)"></div>
-                <div class="swatch" style="background:#00FF87" data-color="#00FF87" onclick="setColor(this)"></div>
-                <div class="swatch" style="background:#FF6B6B" data-color="#FF6B6B" onclick="setColor(this)"></div>
-                <div class="swatch" style="background:#60B8FF" data-color="#60B8FF" onclick="setColor(this)"></div>
-                <input type="color" id="custom-color" value="#ffffff" onchange="setCustomColor(this.value)" title="Custom" style="width:28px;height:28px;border-radius:50%;border:2px solid #333;cursor:pointer;padding:0;background:none;">
-              </div>
-            </div>
-
-            <div class="ctrl-section">
-              <span class="opt-label">Highlight Color</span>
-              <div class="color-swatches">
-                <div class="swatch hl active" style="background:#FFE600" data-color="#FFE600" onclick="setHL(this)"></div>
-                <div class="swatch hl" style="background:#00FF87" data-color="#00FF87" onclick="setHL(this)"></div>
-                <div class="swatch hl" style="background:#FF6B6B" data-color="#FF6B6B" onclick="setHL(this)"></div>
-                <div class="swatch hl" style="background:#60B8FF" data-color="#60B8FF" onclick="setHL(this)"></div>
-                <div class="swatch hl" style="background:#ff69b4" data-color="#ff69b4" onclick="setHL(this)"></div>
-              </div>
-            </div>
-
-            <div class="ctrl-section">
-              <span class="opt-label">Font Size</span>
-              <div class="chips">
-                <button class="chip" onclick="setSize(this,'small')">S</button>
-                <button class="chip on" onclick="setSize(this,'medium')">M</button>
-                <button class="chip" onclick="setSize(this,'large')">L</button>
-                <button class="chip" onclick="setSize(this,'xlarge')">XL</button>
-              </div>
-            </div>
-
-            <div class="ctrl-section">
-              <span class="opt-label">Style</span>
-              <div class="chips">
-                <button class="chip on" onclick="setBg(this,'shadow')">Shadow</button>
-                <button class="chip" onclick="setBg(this,'box')">Box</button>
-                <button class="chip" onclick="setBg(this,'outline')">Outline</button>
-              </div>
-            </div>
-
-            <div class="ctrl-section">
-              <span class="opt-label">Edit Captions</span>
-              <div class="cap-edit-list" id="cap-edit-list"></div>
-            </div>
-
-            <div class="dl-row" id="gen-dl-2" style="display:none">
-              <button class="dl-btn" onclick="dlSRT()">Download SRT</button>
-              <button class="dl-btn alt" id="burn-btn" onclick="burnVideo()">Download Video</button>
-              <button class="dl-btn alt" onclick="resetGen()">New Upload</button>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
   </div>
 
   <div class="app-panel" id="panel-remove">
@@ -1137,7 +1060,7 @@ function renderCaptionEditor() {
     if (caps[0]) renderPreviewText(caps[0].text);
     updatePreviewCaption();
     initDrag();
-  }, 100);
+  }, 150);
 }
 
 function dlSRT() {
@@ -1164,7 +1087,7 @@ function resetGen() {
   document.getElementById('gen-result').style.display = '';
   document.getElementById('gen-caps').innerHTML = '';
   document.getElementById('gen-caps').style.display = 'flex';
-  document.getElementById('cap-editor').style.display = 'none';
+  closeEditor();
   document.getElementById('gen-zone').querySelector('.upload-title').textContent = 'Upload your video';
   document.getElementById('gen-fname').style.display = 'none';
   document.getElementById('gen-btn').disabled = true;
