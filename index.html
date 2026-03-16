@@ -409,71 +409,87 @@ footer {
 /* Full Screen Editor */
 .fullscreen-editor {
   position: fixed; inset: 0; z-index: 200;
-  background: #fff; display: none; flex-direction: column;
-  animation: slideUp 0.3s ease;
+  background: #0a0a0a; display: none; flex-direction: column;
+  animation: slideUp 0.25s ease;
 }
 .fullscreen-editor.open { display: flex; }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 .editor-topbar {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 20px; border-bottom: 1px solid #eee; background: #fff;
-  position: sticky; top: 0; z-index: 10;
+  padding: 16px 20px; background: #0a0a0a;
+  border-bottom: 1px solid #1a1a1a;
 }
-.editor-topbar-title { font-size: 16px; font-weight: 700; }
+.editor-topbar-title { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
 .editor-close-btn {
-  background: #f0f0ee; border: none; border-radius: 100px;
-  padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+  background: #1e1e1e; border: 1px solid #333; border-radius: 100px;
+  padding: 9px 18px; font-size: 13px; font-weight: 600; cursor: pointer;
+  color: #fff; display: flex; align-items: center; gap: 6px;
 }
 .editor-body {
-  flex: 1; overflow-y: auto; padding: 16px 20px;
-  display: flex; flex-direction: column; gap: 20px;
+  flex: 1; overflow-y: auto; padding: 12px 16px;
+  display: flex; flex-direction: column; gap: 14px;
+  background: #0a0a0a;
 }
 .editor-preview-center {
-  display: flex; justify-content: center; padding: 8px 0;
+  display: flex; justify-content: center; padding: 4px 0;
 }
-.editor-sections { display: flex; flex-direction: column; gap: 16px; }
+.editor-sections { display: flex; flex-direction: column; gap: 10px; }
 .editor-section {
-  background: #f7f7f5; border-radius: 12px; padding: 14px 16px;
+  background: #141414; border-radius: 16px; padding: 16px;
+  border: 1px solid #222;
 }
 .editor-section-title {
-  font-size: 11px; font-weight: 700; letter-spacing: .08em;
-  text-transform: uppercase; color: #888; margin-bottom: 10px;
+  font-size: 11px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: #555; margin-bottom: 14px;
 }
 .editor-bottombar {
-  padding: 14px 20px; border-top: 1px solid #eee; background: #fff;
-  display: flex; gap: 10px;
+  padding: 12px 16px 28px; background: #0a0a0a;
+  display: flex; gap: 10px; border-top: 1px solid #1a1a1a;
 }
 .editor-dl-btn {
-  flex: 1; padding: 14px; border-radius: 100px; border: none;
-  background: #0a0a0a; color: #fff; font-size: 15px; font-weight: 700;
+  flex: 1; padding: 17px; border-radius: 100px; border: none;
+  background: #fff; color: #000; font-size: 15px; font-weight: 700;
   cursor: pointer; font-family: 'DM Sans', sans-serif;
 }
 .editor-srt-btn {
-  padding: 14px 20px; border-radius: 100px;
-  background: transparent; border: 1.5px solid #ccc;
+  padding: 17px 22px; border-radius: 100px;
+  background: transparent; border: 1.5px solid #333;
   font-size: 14px; font-weight: 600; cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'DM Sans', sans-serif; color: #fff;
 }
-/* Caption Editor */
-.preview-editor { display:flex; flex-direction:column; gap:16px; margin-top:16px; }
-.preview-wrap { width:100%; display:flex; flex-direction:column; align-items:center; }
-.preview-label { font-size:11px; letter-spacing:.08em; color:#888; text-transform:uppercase; margin-bottom:10px; text-align:center; }
-.phone-mockup { width:200px; background:#111; border-radius:32px; padding:10px; border:4px solid #333; box-shadow:0 8px 32px rgba(0,0,0,0.3); overflow:hidden; }
-.phone-screen { position:relative; background:linear-gradient(160deg,#1a1a2e,#16213e,#0f3460); border-radius:22px; overflow:hidden; aspect-ratio:9/16; width:100%; }
-.phone-bg { position:absolute; inset:0; background:linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.5) 100%); }
-.draggable-caption { position:absolute; left:50%; bottom:20%; transform:translateX(-50%); cursor:grab; user-select:none; touch-action:none; text-align:center; max-width:88%; z-index:10; padding:2px 0; }
+/* Color swatches in editor */
+.editor-section .color-swatches { gap: 12px; flex-wrap: wrap; }
+.editor-section .swatch { width: 38px; height: 38px; border-radius: 50%; border: 3px solid transparent; transition: .15s; }
+.editor-section .swatch.active { border-color: #fff; transform: scale(1.15); box-shadow: 0 0 0 2px #000; }
+.editor-section input[type="color"] { width: 38px !important; height: 38px !important; border-radius: 50% !important; border: 3px solid #444 !important; cursor: pointer; padding: 0 !important; background: none !important; }
+/* Cap edit list in editor */
+.editor-section .cap-edit-list { max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+.editor-section .cap-edit-row { background: #1e1e1e; border: 1.5px solid #2a2a2a; border-radius: 10px; padding: 10px 12px; }
+.editor-section .cap-edit-row.active { border-color: #fff; }
+.editor-section .cap-edit-time { color: #555; }
+.editor-section .cap-edit-input { color: #fff; background: transparent; border: none; outline: none; font-size: 13px; width: 100%; font-family: 'DM Sans', sans-serif; }
+/* Chips in editor */
+.editor-section .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.editor-section .chip { background: #1e1e1e; border: 1.5px solid #333; border-radius: 100px; padding: 8px 18px; font-size: 13px; font-weight: 600; color: #aaa; cursor: pointer; transition: .15s; font-family: 'DM Sans', sans-serif; }
+.editor-section .chip.on { background: #fff; color: #000; border-color: #fff; }
+/* Phone Mockup */
+.preview-label { font-size:10px; letter-spacing:.08em; color:#555; text-transform:uppercase; margin-bottom:8px; text-align:center; }
+.phone-mockup { width:185px; background:#000; border-radius:36px; padding:8px; border:3px solid #222; box-shadow:0 0 40px rgba(255,255,255,0.05); overflow:hidden; }
+.phone-screen { position:relative; background:linear-gradient(160deg,#1a1a2e,#0f1923,#0a0a0a); border-radius:28px; overflow:hidden; aspect-ratio:9/16; width:100%; }
+.phone-bg { position:absolute; inset:0; background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,0.4) 100%); }
+.draggable-caption { position:absolute; left:50%; bottom:18%; transform:translateX(-50%); cursor:grab; user-select:none; touch-action:none; text-align:center; max-width:90%; z-index:10; }
 .draggable-caption:active { cursor:grabbing; }
-#drag-cap-text { font-family:'DM Sans',sans-serif; font-weight:800; font-size:13px; color:#fff; text-transform:uppercase; line-height:1.35; text-shadow:1px 1px 4px #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000; white-space:pre-wrap; word-break:break-word; display:block; }
-.editor-controls { width:100%; display:flex; flex-direction:column; gap:14px; }
-.ctrl-section { display:flex; flex-direction:column; gap:8px; }
-.color-swatches { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-.swatch { width:28px; height:28px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:.15s; flex-shrink:0; }
-.swatch.active { border-color:#000; transform:scale(1.25); }
-.cap-edit-list { display:flex; flex-direction:column; gap:6px; max-height:200px; overflow-y:auto; }
-.cap-edit-row { display:grid; grid-template-columns:48px 1fr; gap:8px; align-items:center; background:#f9f9f9; border-radius:8px; padding:8px 10px; border:1.5px solid #eee; cursor:pointer; transition:.15s; }
-.cap-edit-row:hover,.cap-edit-row.active { border-color:#000; background:#f0f0f0; }
-.cap-edit-time { font-size:10px; color:#888; font-family:monospace; font-weight:700; }
-.cap-edit-input { border:none; background:transparent; font-size:13px; color:#111; width:100%; outline:none; font-family:inherit; }
+#drag-cap-text { font-family:'DM Sans',sans-serif; font-weight:800; font-size:13px; color:#fff; text-transform:uppercase; line-height:1.3; text-shadow:2px 2px 6px rgba(0,0,0,1),-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000; white-space:pre-wrap; word-break:break-word; display:block; }
+/* Color swatches - bigger and nicer */
+.color-swatches { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.swatch { width:34px; height:34px; border-radius:50%; cursor:pointer; border:3px solid transparent; transition:.15s; flex-shrink:0; box-shadow:0 2px 8px rgba(0,0,0,0.4); }
+.swatch.active { border-color:#fff; transform:scale(1.2); }
+/* Caption list in dark mode */
+.cap-edit-list { display:flex; flex-direction:column; gap:6px; max-height:180px; overflow-y:auto; }
+.cap-edit-row { display:grid; grid-template-columns:48px 1fr; gap:8px; align-items:center; background:#222; border-radius:8px; padding:10px 12px; border:1.5px solid #333; cursor:pointer; transition:.15s; }
+.cap-edit-row:hover,.cap-edit-row.active { border-color:#fff; background:#2a2a2a; }
+.cap-edit-time { font-size:10px; color:#666; font-family:monospace; font-weight:700; }
+.cap-edit-input { border:none; background:transparent; font-size:13px; color:#fff; width:100%; outline:none; font-family:inherit; }
 </style>
 </head>
 <body>
@@ -626,8 +642,8 @@ footer {
         <div class="cap-list" id="gen-caps"></div>
         
         <div class="dl-row" id="gen-dl" style="display:none">
+          <button class="run-btn" onclick="openEditor()" style="margin-bottom:10px;background:#000;color:#fff;">✏️ Edit & Download</button>
           <button class="dl-btn" onclick="dlSRT()">Download SRT</button>
-          <button class="dl-btn alt" id="burn-btn-old" onclick="burnVideo()">Download Video</button>
           <button class="dl-btn alt" onclick="resetGen()">New Upload</button>
         </div>
       </div>
@@ -1061,6 +1077,27 @@ function initDrag() {
 function openEditor() {
   document.getElementById('fullscreen-editor').classList.add('open');
   document.body.style.overflow = 'hidden';
+  // Always repopulate when opening
+  const list = document.getElementById('cap-edit-list');
+  if (list && caps.length) {
+    list.innerHTML = '';
+    caps.forEach((cap, i) => {
+      const row = document.createElement('div');
+      row.className = 'cap-edit-row' + (i === 0 ? ' active' : '');
+      row.innerHTML = `<span class="cap-edit-time">${cap.time}</span><input class="cap-edit-input" value="${cap.text}" oninput="caps[${i}].text=this.value;renderPreviewText(this.value)">`;
+      row.addEventListener('click', () => {
+        document.querySelectorAll('.cap-edit-row').forEach(r => r.classList.remove('active'));
+        row.classList.add('active');
+        renderPreviewText(cap.text);
+      });
+      list.appendChild(row);
+    });
+  }
+  setTimeout(() => {
+    if (caps[0]) renderPreviewText(caps[0].text);
+    updatePreviewCaption();
+    initDrag();
+  }, 150);
 }
 
 function closeEditor() {
@@ -1219,9 +1256,9 @@ function toast(msg) {
       <div class="editor-section">
         <div class="editor-section-title">Caption Size</div>
         <input type="range" id="size-slider" min="6" max="32" value="13" step="0.5" 
-          style="width:100%;accent-color:#000;height:6px;cursor:pointer;"
+          style="width:100%;accent-color:#fff;height:4px;cursor:pointer;"
           oninput="setFontSize(parseFloat(this.value))">
-        <div style="display:flex;justify-content:space-between;font-size:11px;color:#888;margin-top:4px;">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:#555;margin-top:6px;">
           <span>Small</span><span>Medium</span><span>Large</span><span>XL</span>
         </div>
       </div>
