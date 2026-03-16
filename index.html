@@ -980,8 +980,8 @@ function setBg(el, val) {
 }
 
 function updatePreviewCaption() {
-  const cap = document.getElementById('drag-cap');
-  const el = document.getElementById('drag-cap-text');
+  const cap = document.querySelector('#fullscreen-editor #drag-cap') || document.getElementById('drag-cap');
+  const el = document.querySelector('#fullscreen-editor #drag-cap-text') || document.getElementById('drag-cap-text');
   if (!cap || !el) return;
   const sizeMap = { small:'9px', medium:'11px', large:'14px', xlarge:'18px' };
   el.style.fontSize = sizeMap[capSize] || '11px';
@@ -1008,7 +1008,8 @@ function updatePreviewCaption() {
 }
 
 function renderPreviewText(text) {
-  const el = document.getElementById('drag-cap-text');
+  // Use the one inside fullscreen-editor
+  const el = document.querySelector('#fullscreen-editor #drag-cap-text') || document.getElementById('drag-cap-text');
   if (!el) return;
   const words = text.toUpperCase().split(' ');
   let hlIdx = 0;
@@ -1024,8 +1025,8 @@ let capFontSize = 13; // px on mockup
 function initDrag() {
   if (dragInitialized) return;
   dragInitialized = true;
-  const cap = document.getElementById('drag-cap');
-  const screen = document.querySelector('.phone-screen');
+  const cap = document.querySelector('#fullscreen-editor #drag-cap');
+  const screen = document.querySelector('#fullscreen-editor .phone-screen');
   if (!cap || !screen) return;
 
   let dragging = false, startX, startY, startCapX, startCapY;
@@ -1082,7 +1083,8 @@ function initDrag() {
       const dist = getDist(e);
       const scale = dist / startDist;
       capFontSize = Math.max(7, Math.min(30, startFontSize * scale));
-      document.getElementById('drag-cap-text').style.fontSize = capFontSize + 'px';
+      const capTextEl = document.querySelector('#fullscreen-editor #drag-cap-text') || document.getElementById('drag-cap-text');
+      if (capTextEl) capTextEl.style.fontSize = capFontSize + 'px';
       // also update burn size based on font size
       if (capFontSize < 9) capSize = 'small';
       else if (capFontSize < 14) capSize = 'medium';
