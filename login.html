@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — Capy AI</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0a0a0b;
+      --surface:   #111114;
+      --border:    rgba(255,255,255,0.07);
+      --border-hi: rgba(255,255,255,0.15);
+      --text:      #f0f0f0;
+      --muted:     #6b6b7a;
+      --accent:    #f5c842;      /* Capy yellow */
+      --accent2:   #ff6b35;
+      --radius:    16px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      overflow: hidden;
+    }
+
+    /* ── Animated background grid ── */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(245,200,66,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245,200,66,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridDrift 20s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes gridDrift {
+      from { background-position: 0 0; }
+      to   { background-position: 60px 60px; }
+    }
+
+    /* ── Glow blobs ── */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.18;
+      pointer-events: none;
+      animation: blobFloat 8s ease-in-out infinite alternate;
+    }
+    .blob-1 {
+      width: 500px; height: 500px;
+      background: var(--accent);
+      top: -150px; right: -100px;
+      animation-delay: 0s;
+    }
+    .blob-2 {
+      width: 400px; height: 400px;
+      background: var(--accent2);
+      bottom: -100px; left: -100px;
+      animation-delay: -4s;
+    }
+    @keyframes blobFloat {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(30px, 20px) scale(1.05); }
+    }
+
+    /* ── Page layout ── */
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Nav ── */
+    nav {
+      padding: 24px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-dot {
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50%       { transform: scale(1.4); opacity: 0.7; }
+    }
+    .back-link {
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--text); }
+
+    /* ── Card ── */
+    .card-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px 44px;
+      position: relative;
+      overflow: hidden;
+      animation: cardIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(24px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* subtle inner glow at top */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 200px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    /* ── Card content ── */
+    .card-icon {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 28px;
+      box-shadow: 0 8px 24px rgba(245,200,66,0.25);
+    }
+
+    .card h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.75rem;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 10px;
+    }
+    .card h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 36px;
+    }
+
+    /* ── Google button ── */
+    .btn-google {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 14px 20px;
+      background: #fff;
+      color: #1a1a1a;
+      border: none;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-google::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0);
+      transition: background 0.15s;
+    }
+    .btn-google:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+    .btn-google:hover::after { background: rgba(0,0,0,0.04); }
+    .btn-google:active { transform: translateY(0); }
+
+    .btn-google svg {
+      width: 20px; height: 20px;
+      flex-shrink: 0;
+    }
+
+    /* ── Loading state ── */
+    .btn-google.loading {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    .btn-google.loading .btn-text::after {
+      content: '';
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid #888;
+      border-top-color: #333;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Divider ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Features list ── */
+    .features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.83rem;
+      color: var(--muted);
+    }
+    .features li .check {
+      width: 18px; height: 18px;
+      background: rgba(245,200,66,0.12);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.65rem;
+    }
+
+    /* ── Footer note ── */
+    .card-footer {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+    }
+    .card-footer a {
+      color: var(--text);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .card-footer a:hover { color: var(--accent); }
+
+    /* ── Toast notification ── */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1a1a1e;
+      border: 1px solid var(--border-hi);
+      color: var(--text);
+      padding: 12px 24px;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      z-index: 100;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.error { border-color: #ff4545; color: #ff8080; }
+  </style>
+</head>
+<body>
+
+  <div class="bg-grid"></div>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <div class="page">
+    <!-- Nav -->
+    <nav>
+      <a href="index.html" class="logo">
+        <span class="logo-dot"></span>Capy AI
+      </a>
+      <a href="index.html" class="back-link">← Back to home</a>
+    </nav>
+
+    <!-- Card -->
+    <div class="card-wrap">
+      <div class="card">
+        <div class="card-icon">🦫</div>
+
+        <h1>Welcome to<br><em>Capy AI</em></h1>
+        <p>Sign in to save your caption history, track usage, and unlock your plan benefits.</p>
+
+        <!-- Google Sign-In Button -->
+        <button class="btn-google" id="googleBtn" onclick="signInWithGoogle()">
+          <!-- Google SVG logo -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          <span class="btn-text">Continue with Google</span>
+        </button>
+
+        <div class="divider">what you get</div>
+
+        <ul class="features">
+          <li>
+            <span class="check">✓</span>
+            <span>Caption history saved to your account</span>
+          </li>
+          <li>
+            <span class="check">✓</span>
+            <span>Operations tracked across devices</span>
+          </li>
+          <li>
+            <span class="check">✓</span>
+            <span>10 free operations every month</span>
+          </li>
+          <li>
+            <span class="check">✓</span>
+            <span>Upgrade anytime to remove limits</span>
+          </li>
+        </ul>
+
+        <div class="card-footer">
+          By signing in you agree to our
+          <a href="#">Terms of Service</a> and
+          <a href="#">Privacy Policy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    // ═══════════════════════════════════════════════════
+    // 🔧 CONFIGURATION — fill these in after Supabase setup
+    // ═══════════════════════════════════════════════════
+    const SUPABASE_URL  = 'https://pdqrcnfwslufajwjivaq.supabase.co';
+    const SUPABASE_ANON = 'sb_publishable_EESffuJVtBIQ_2UTMj2TnA_JEUP4pPU';
+
+    // Init Supabase client
+    const { createClient } = supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    // ── Toast helper ──────────────────────────────────
+    function showToast(msg, isError = false) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast' + (isError ? ' error' : '');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    // ── Check if already logged in ────────────────────
+    async function checkSession() {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        // Already logged in — go back to app
+        window.location.href = 'index.html';
+      }
+    }
+    checkSession();
+
+    // ── Google Sign-In ────────────────────────────────
+    async function signInWithGoogle() {
+      const btn = document.getElementById('googleBtn');
+      btn.classList.add('loading');
+      btn.querySelector('.btn-text').textContent = 'Connecting';
+
+      const { error } = await sb.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          // After login, Supabase redirects here:
+          redirectTo: window.location.origin + '/capy-ai-website/index.html'
+        }
+      });
+
+      if (error) {
+        showToast('Sign-in failed: ' + error.message, true);
+        btn.classList.remove('loading');
+        btn.querySelector('.btn-text').textContent = 'Continue with Google';
+      }
+      // If no error, browser redirects to Google — no further action needed
+    }
+
+    // ── Listen for auth state changes ─────────────────
+    sb.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        showToast('Welcome back, ' + session.user.user_metadata.full_name + '! 👋');
+        setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+      }
+    });
+  </script>
+</body>
+</html>
