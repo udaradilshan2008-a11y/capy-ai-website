@@ -208,6 +208,11 @@ nav {
 .upload-icon svg { width: 22px; height: 22px; stroke: var(--gray-500); stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .upload-title { font-size: 15px; font-weight: 600; color: var(--black); }
 .upload-hint { font-size: 12px; color: var(--gray-400); font-family: 'DM Mono', monospace; }
+.upload-video-preview {
+  width: 100%; border-radius: 8px; display: none;
+  max-height: 200px; object-fit: contain; background: #000;
+  margin-top: 8px;
+}
 .file-display {
   background: var(--gray-100); border: 1px solid var(--gray-200);
   border-radius: var(--radius-sm); padding: 10px 14px;
@@ -611,6 +616,7 @@ footer {
           <div class="upload-title">Upload your video</div>
           <div class="upload-hint">MP4 · MOV · AVI · WebM</div>
           <input type="file" id="gen-file" accept="video/*,audio/*" style="display:none" onchange="handleGen(this)">
+          <video id="gen-video-preview" class="upload-video-preview" controls playsinline></video>
         </div>
         <div class="file-display" id="gen-fname"></div>
         <div class="err-box" id="gen-err"></div>
@@ -813,6 +819,12 @@ function handleGen(input) {
   document.getElementById('gen-zone').classList.add('has-file');
   document.getElementById('gen-zone').querySelector('.upload-title').textContent = f.name;
   document.getElementById('gen-btn').disabled = false;
+  // Show video preview
+  const preview = document.getElementById('gen-video-preview');
+  preview.src = URL.createObjectURL(f);
+  preview.style.display = 'block';
+  // Stop the upload zone click from triggering when clicking the video
+  preview.onclick = e => e.stopPropagation();
 }
 
 function handleRem(input) {
@@ -1182,6 +1194,9 @@ function resetGen() {
   document.getElementById('gen-fname').style.display = 'none';
   document.getElementById('gen-btn').disabled = true;
   document.getElementById('gen-file').value = '';
+  const preview = document.getElementById('gen-video-preview');
+  preview.src = '';
+  preview.style.display = 'none';
 }
 
 async function burnVideo() {
