@@ -267,13 +267,6 @@ async function decrementOp(userId) {
   updateNavUI(session?.user ?? null);
 
   // Also handle the "Start Free" / "Try for Free" CTA in the hero section
-  if (session?.user) {
-    document.querySelectorAll('a[href="#app-section"]').forEach(a => {
-      if (a.classList.contains('nav-cta')) return; // nav handled above
-      a.textContent = 'Open App';
-    });
-  }
-
   // Keep UI in sync if session changes (e.g. after redirect from Google)
   sb.auth.onAuthStateChange((_event, session) => {
     updateNavUI(session?.user ?? null);
