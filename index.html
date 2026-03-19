@@ -302,7 +302,17 @@ nav {
 .step.done { color: var(--gray-400); }
 .step.done::before { content: 'done'; font-size: 10px; }
 
-.cap-list { display: flex; flex-direction: column; gap: 5px; }
+.cap-list {
+  display: flex; flex-direction: column; gap: 5px;
+  max-height: 340px;
+  overflow-y: auto;
+  padding-right: 4px;
+  scroll-behavior: smooth;
+}
+.cap-list::-webkit-scrollbar { width: 4px; }
+.cap-list::-webkit-scrollbar-track { background: var(--gray-100); border-radius: 10px; }
+.cap-list::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 10px; }
+.cap-list::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
 .cap-row {
   display: flex; gap: 14px; align-items: flex-start;
   padding: 10px 14px; border-radius: var(--radius-sm);
