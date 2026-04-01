@@ -320,6 +320,17 @@ nav {
   animation: fadeUp 0.28s ease forwards; opacity: 0; transform: translateY(6px);
 }
 @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+
+/* Caption animation previews */
+@keyframes capFadeIn { 0%{opacity:0} 100%{opacity:1} }
+@keyframes capBounce { 0%{transform:translateX(-50%) translateY(18px);opacity:0} 60%{transform:translateX(-50%) translateY(-6px);opacity:1} 80%{transform:translateX(-50%) translateY(3px)} 100%{transform:translateX(-50%) translateY(0);opacity:1} }
+@keyframes capPop { 0%{transform:translateX(-50%) scale(0.3);opacity:0} 60%{transform:translateX(-50%) scale(1.12);opacity:1} 80%{transform:translateX(-50%) scale(0.95)} 100%{transform:translateX(-50%) scale(1);opacity:1} }
+@keyframes capSlideUp { 0%{transform:translateX(-50%) translateY(30px);opacity:0} 100%{transform:translateX(-50%) translateY(0);opacity:1} }
+.anim-none {}
+.anim-fadein { animation: capFadeIn 0.5s ease forwards; }
+.anim-bounce { animation: capBounce 0.6s cubic-bezier(0.36,0.07,0.19,0.97) forwards; }
+.anim-pop    { animation: capPop 0.5s cubic-bezier(0.36,0.07,0.19,0.97) forwards; }
+.anim-slideup{ animation: capSlideUp 0.45s ease forwards; }
 .cap-time { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--gray-400); white-space: nowrap; margin-top: 2px; min-width: 44px; }
 .cap-text { font-size: 14px; line-height: 1.5; color: var(--black); }
 
@@ -937,6 +948,7 @@ let capBg = 'shadow';
 let capX = 50;
 let capY = 82;
 let capFont = 'DM Sans';
+let capAnimation = 'none';
 
 function setColor(el) {
   el.closest('.color-swatches').querySelectorAll('.swatch:not(.hl)').forEach(s => s.classList.remove('active'));
@@ -966,6 +978,17 @@ function setBg(el, val) {
   el.classList.add('on');
   capBg = val;
   updatePreviewCaption();
+}
+
+function setAnim(el, val) {
+  el.closest('.chips').querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  capAnimation = val;
+  const cap = document.getElementById('drag-cap');
+  if (!cap) return;
+  cap.classList.remove('anim-none','anim-fadein','anim-bounce','anim-pop','anim-slideup');
+  void cap.offsetWidth;
+  cap.classList.add('anim-' + val);
 }
 
 function updatePreviewCaption() {
@@ -1229,6 +1252,7 @@ async function burnVideo() {
     formData.append('posX', capX);
     formData.append('posY', capY);
     formData.append('font', capFont);
+    formData.append('animation', capAnimation);
     const res = await fetch(`${RAILWAY_URL}/burn-captions`, {
       method: 'POST',
       body: formData,
@@ -1434,6 +1458,18 @@ function toast(msg) {
           <button class="chip on" onclick="setBg(this,'shadow')">Shadow</button>
           <button class="chip" onclick="setBg(this,'box')">Box</button>
           <button class="chip" onclick="setBg(this,'outline')">Outline</button>
+        </div>
+      </div>
+
+      <!-- Animation -->
+      <div class="editor-section">
+        <div class="editor-section-title">Animation</div>
+        <div class="chips">
+          <button class="chip on"  onclick="setAnim(this,'none')">None</button>
+          <button class="chip"     onclick="setAnim(this,'fadein')">Fade In</button>
+          <button class="chip"     onclick="setAnim(this,'bounce')">Bounce</button>
+          <button class="chip"     onclick="setAnim(this,'pop')">Pop</button>
+          <button class="chip"     onclick="setAnim(this,'slideup')">Slide Up</button>
         </div>
       </div>
 
